@@ -4,7 +4,7 @@ An demonstration app to showcase Google's [Volley](https://android.googlesource.
 
 
 ## About
-I recently came across a project of turning a WordPress site into aa mobile news reader app. After a bit of research, I ended up finding several paid services to do exactly that. With little luck finding an adequate free service, I decided to write my own. And this is the direct result of that. 
+I recently came across a project to turn a WordPress site into a news reader app. After a bit of research, I ended up finding several paid services to do exactly that. With little luck finding an adequate free one, I decided to write my own. And this is the direct result of that. 
 
 
 The project features JSON array & JSON object request, AppCompat Material Design, WebView, custom ListView adaptor and multi-language support. It first reads post categories and dynamically create the GUI. Then it loads posts page by page to fill the ListView.
