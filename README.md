@@ -26,4 +26,4 @@ PS: This project uses Disqus commenting system, which is better than WordPress's
 
 ## Copyright and Licensing
 Copyright Declan Gao [@DeclanGao](http://twitter.com/DeclanGao/) © 2015.
-This app is distributed under an Apache 2.0 License.
+This app is distributed under Apache 2.0 License.
