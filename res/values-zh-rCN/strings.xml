@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">WordPress 阅读器</string>
     <string name="action_settings">设置</string>
+    <string name="action_comments">评论</string>
     <string name="title_activity_article">文章</string>
     <string name="title_activity_comment">评论</string>
     <string name="action_share">分享</string>

@@ -4,8 +4,11 @@
     tools:context="me.declangao.wordpressclient.app.ArticleActivity">
 
     <!-- Comments menu -->
-    <item android:id="@+id/action_comments" android:title="Comments"
-        android:orderInCategory="1" app:showAsAction="always" />
+    <item android:id="@+id/action_comments"
+        android:title="@string/action_comments"
+        android:icon="@drawable/ic_action_comment"
+        android:orderInCategory="1"
+        app:showAsAction="always" />
 
     <!-- ActionBar Share menu -->
     <item android:id="@+id/action_share"
