@@ -30,7 +30,7 @@ public class ArticleActivity extends ActionBarActivity {
 
         // Construct HTML content
         // First some CSS
-        String html = "<style>img{width:100%;} iframe{width:100%;height:56%;}</style> ";
+        String html = "<style>img{max-width:100%;height:auto;} iframe{width:100%;height:56%;}</style> ";
         // Article Title
         html += "<h2>" + intent.getStringExtra("title") +"</h2> ";
         // Date & author
