@@ -31,7 +31,7 @@ import me.declangao.wordpressreader.R;
 
 
 /**
- * A simple Fragment subclass.
+ * A Fragment that contains a list of posts.
  */
 public class PostListFragment extends android.support.v4.app.Fragment {
     private static final String TAG = PostListFragment.class.getSimpleName();
@@ -92,7 +92,8 @@ public class PostListFragment extends android.support.v4.app.Fragment {
 
             // Load next page when the user scrolls to the end of the list
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+                                 int totalItemCount) {
                 // If the end of the list reached and is currently not loading
                 if (!loading && (firstVisibleItem + visibleItemCount) == totalItemCount) {
                     loading = true; // Set flag to true
@@ -119,6 +120,23 @@ public class PostListFragment extends android.support.v4.app.Fragment {
                 intent.putExtra("id", p.getId());
                 intent.putExtra("url", p.getUrl());
                 startActivity(intent);
+
+                /*
+                Bundle bundle = new Bundle();
+                bundle.putString("title", p.getTitle());
+                bundle.putString("content", p.getContent());
+                bundle.putString("date", p.getDate().split(" ")[0]);
+                bundle.putInt("commentCount", p.getCommentCount());
+                bundle.putString("author", p.getAuthor());
+                bundle.putInt("id", p.getId());
+
+                ArticleFragment articleFragment = ArticleFragment.newInstance(bundle, p);
+                articleFragment.setArguments(bundle);
+
+                FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
+                ft.addToBackStack(null);
+                ft.replace(R.id.main_frame, articleFragment).commit();
+                */
             }
         });
     }
@@ -156,7 +174,7 @@ public class PostListFragment extends android.support.v4.app.Fragment {
                         try {
                             // Parse Json data
                             JSONArray postArray = jsonObject.getJSONArray("posts");
-                            int numPerPage = jsonObject.getInt("count");
+                            //int numPerPage = jsonObject.getInt("count");
 
                             // Go through each post
                             for (int i = 0; i < postArray.length(); i++) {
@@ -185,14 +203,19 @@ public class PostListFragment extends android.support.v4.app.Fragment {
 
                             // Set ListView position
                             if (PostListFragment.this.page != 1) {
-                                listView.setSelection((PostListFragment.this.page -1) * numPerPage);
+                                //listView.setSelection((PostListFragment.this.page -1) *
+                                //        numPerPage - 1);
+                                // Move the article list up by one row
+                                listView.setSelection(listView.getFirstVisiblePosition() + 1);
                             }
-                            PostListFragment.this.page++; // Add 1 to page to prepare for the next page
+                            // Add 1 to page to prepare for the next page
+                            PostListFragment.this.page++;
 
                         } catch (JSONException e) {
                             Log.d(TAG, e.getMessage());
                             Log.d(TAG, "----------------- Json Exception");
-                            Toast.makeText(getActivity(), "Json Exception. Please try again.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Json Exception. Please try again.",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 },
@@ -201,7 +224,8 @@ public class PostListFragment extends android.support.v4.app.Fragment {
                     public void onErrorResponse(VolleyError volleyError) {
                         progressDialog.dismiss();
                         Log.d(TAG, "----------------- Error: " + volleyError.getMessage());
-                        Toast.makeText(getActivity(), "Network error. Please try again later...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Network error. Please try again later...",
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
 
