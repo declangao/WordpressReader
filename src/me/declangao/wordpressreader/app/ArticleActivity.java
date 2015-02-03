@@ -17,6 +17,7 @@ public class ArticleActivity extends ActionBarActivity {
     private Intent intent;
     private ShareActionProvider mShareActionProvider;
     private String url;
+    private String title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class ArticleActivity extends ActionBarActivity {
         html += intent.getStringExtra("content");
 
         url = intent.getStringExtra("url");
+        title = intent.getStringExtra("title");
 
         // Create the WebView
         webView = (WebView) findViewById(R.id.webView);
@@ -64,7 +66,7 @@ public class ArticleActivity extends ActionBarActivity {
         // Share the article URL
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");
-        i.putExtra(Intent.EXTRA_TEXT, url);
+        i.putExtra(Intent.EXTRA_TEXT, title + "\n" + url);
         mShareActionProvider.setShareIntent(i);
 
         return true;
