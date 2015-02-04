@@ -27,6 +27,6 @@ PS: This project uses Disqus commenting system, which is better than WordPress's
 ![Comments](http://i.imgur.com/xP6lZqi.png)
 
 ## License
-Copyright Declan Gao [@DeclanGao](http://twitter.com/DeclanGao/) © 2015.
+Copyright [DeclanGao](http://twitter.com/DeclanGao/) © 2015.
 
 Licensed under Apache 2.0 license.
