@@ -9,12 +9,20 @@ The project features JSON array & JSON object request, AppCompat Material Design
 Note: This is still a work in progress. More features are coming soon. 
 
 ## Requirements
-This project requires Volley library, a WordPress site (tested on WordPress 4.x) and [JSON API plugin](https://wordpress.org/plugins/json-api/) to function properly. Remember to set your own WordPress URL before trying it out.
+This project requires Volley library, a WordPress site (tested on WordPress 4.x) and [JSON API plugin](https://wordpress.org/plugins/json-api/) to function properly. Remember to set your own WordPress URL in Config.java before trying it out.
+
+I added a Floating Action Button to go for the full Material Design experience. Unfortunately, Floating Action Button is not a part of the SDK. It's the same thing with Snack Bar. Part of Material Design but not included in SDK. What's with that, Google? Instead of making the Floating Action Button myself, I used [this thrid-party library](http://github.com/futuresimple/android-floating-action-button) . So to setup the project, you will also need to add this dependancy to your `build.gradle` file:
+
+```groovy
+dependencies {
+    compile 'com.getbase:floatingactionbutton:1.7.0'
+}
+```
 
 PS: This project uses Disqus commenting system, which is better than WordPress's own commenting system in my opinion. So you will need to have Disqus installed on your WordPress site as well. It's quite easy to switch back to the original commenting system though.
 
 ## Screenshots
-![Main GUI](http://i.imgur.com/OsWtR5K.png)
+![Main GUI](http://i.imgur.com/NL1Jyqb.png)
 ![Article](http://i.imgur.com/eyPJ7A8.png)
 ![Comments](http://i.imgur.com/xP6lZqi.png)
 

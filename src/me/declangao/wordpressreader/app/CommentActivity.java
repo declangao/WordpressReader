@@ -13,6 +13,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import me.declangao.wordpressreader.R;
+import me.declangao.wordpressreader.util.Config;
 import me.declangao.wordpressreader.util.MyWebViewClient;
 
 public class CommentActivity extends ActionBarActivity {
@@ -28,9 +29,9 @@ public class CommentActivity extends ActionBarActivity {
         Intent intent = getIntent();
         id = intent.getIntExtra("id", 0); // Get post ID
         // Create disqusThreadId
-        disqusThreadId = id + " " + MainActivity.BASE_URL + "?p=" + id;
+        disqusThreadId = id + " " + Config.BASE_URL + "?p=" + id;
         // Create Disqus URL for this specific post
-        String url = MainActivity.BASE_URL + "showcomments.php?disqus_id=" + disqusThreadId;
+        String url = Config.BASE_URL + "showcomments.php?disqus_id=" + disqusThreadId;
 
         // Setup WebView
         WebView webViewComment = (WebView) findViewById(R.id.webView_comment);

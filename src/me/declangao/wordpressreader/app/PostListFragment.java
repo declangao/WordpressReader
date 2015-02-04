@@ -13,10 +13,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +30,7 @@ import java.util.List;
 import me.declangao.wordpressreader.model.Post;
 import me.declangao.wordpressreader.adaptor.PostAdaptor;
 import me.declangao.wordpressreader.R;
+import me.declangao.wordpressreader.util.Config;
 
 
 /**
@@ -42,6 +45,7 @@ public class PostListFragment extends android.support.v4.app.Fragment {
     // An ArrayList of all posts in the ListView
     private List<Post> postList = new ArrayList<Post>();
     private ListView listView;
+    private FloatingActionButton fab;
     private PostAdaptor postAdaptor;
     // Page number
     private int page=1;
@@ -72,6 +76,8 @@ public class PostListFragment extends android.support.v4.app.Fragment {
         View v = inflater.inflate(R.layout.fragment_post_list, null);
         // Create the ListView
         listView = (ListView) v.findViewById(R.id.listView);
+        // A Floating Action Button to refresh the list
+        fab = (FloatingActionButton) v.findViewById(R.id.fab);
 
         return v;
     }
@@ -139,6 +145,13 @@ public class PostListFragment extends android.support.v4.app.Fragment {
                 */
             }
         });
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadPosts(page);
+            }
+        });
     }
 
     /*
@@ -157,9 +170,9 @@ public class PostListFragment extends android.support.v4.app.Fragment {
         // Construct the proper API Url
         String url;
         if (catId == 0) { // The "All" tab
-            url = MainActivity.BASE_URL + "?json=get_posts&page=" + String.valueOf(page);
+            url = Config.BASE_URL + "?json=get_posts&page=" + String.valueOf(page);
         } else { // Everything else
-            url = MainActivity.BASE_URL + "?json=get_category_posts&category_id=" +
+            url = Config.BASE_URL + "?json=get_category_posts&category_id=" +
                     String.valueOf(catId) + "&page=" + String.valueOf(page);
         }
 
@@ -223,11 +236,17 @@ public class PostListFragment extends android.support.v4.app.Fragment {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         progressDialog.dismiss();
+                        volleyError.printStackTrace();
                         Log.d(TAG, "----------------- Error: " + volleyError.getMessage());
                         Toast.makeText(getActivity(), "Network error. Please try again later...",
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
+
+        // Set timeout to 10 seconds instead of the default value 5 seconds since my
+        // crappy server is quite slow and I always get timeout error...
+        request.setRetryPolicy(new DefaultRetryPolicy(10000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         // Add request to request queue
         AppController.getInstance().addToRequestQueue(request, TAG);

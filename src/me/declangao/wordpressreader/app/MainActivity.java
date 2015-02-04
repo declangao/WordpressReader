@@ -17,6 +17,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import me.declangao.wordpressreader.R;
+import me.declangao.wordpressreader.util.Config;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,9 +28,6 @@ import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener{
-    // Fill in your own WordPress URL, don't forget the "/" in the end
-    public static final String BASE_URL = "http://URL_TO_YOUR_OWN_SITE/";
-
     List<Fragment> fragmentList = new ArrayList<Fragment>();
     Fragment f = null;
     PostListFragment plf = null;
@@ -55,7 +53,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         progressDialog.show();
 
         // Category API URL
-        String url = BASE_URL + "?json=get_category_index";
+        String url = Config.BASE_URL + "?json=get_category_index";
 
         // Make a Json request using Volley
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -140,6 +138,22 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        /*
+        if (fragmentList.size() > tab.getPosition()) {
+            fragmentList.get(tab.getPosition());
+        }
+        if (f == null) {
+            tf = new TabFragment();
+            Bundle data = new Bundle();
+            data.putInt("index", tab.getPosition());
+            tf.setArguments(data);
+            fragmentList.add(tf);
+        } else {
+            tf = (TabFragment) f;
+        }
+
+        fragmentTransaction.replace(android.R.id.content, tf);
+        */
 
         if (fragmentList.size() > tab.getPosition()) {
             fragmentList.get(tab.getPosition());

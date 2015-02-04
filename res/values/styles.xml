@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -11,8 +11,11 @@
         <item name="colorPrimary">#FF5722</item>
         <item name="colorPrimaryDark">#D84315</item>
         <item name="android:textColorPrimary">#ffffff</item>
-
         <item name="android:textColorSecondary">#000000</item>
+        <item name="android:navigationBarColor" tools:targetApi="21" >#FF5722</item>
+
+        <!-- Transparent Navigation Bar -->
+        <!--<item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item>-->
 
         <item name="android:actionBarTabStyle">@style/MyActionBarTabs</item>
         <!-- Support library compatibility -->
