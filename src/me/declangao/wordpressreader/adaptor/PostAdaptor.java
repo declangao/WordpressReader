@@ -51,30 +51,45 @@ public class PostAdaptor extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
+
         if (layoutInflater == null) {
-            layoutInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            layoutInflater = (LayoutInflater)
+                    activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
+
         if (convertView == null) {
             // Inflate list_row layout for each row in the list
             convertView = layoutInflater.inflate(R.layout.list_row, null);
-        }
-        if (imageLoader == null) {
-            imageLoader = AppController.getInstance().getImageLoader();
-        }
 
-        // Create NetImageView
-        NetworkImageView networkImageView = (NetworkImageView) convertView.findViewById(R.id.thumbnail);
-        TextView title = (TextView) convertView.findViewById(R.id.title);
-        TextView commentCount = (TextView) convertView.findViewById(R.id.comment_count);
-        TextView viewCount = (TextView) convertView.findViewById(R.id.view_count);
+            // Create the ViewHolder
+            viewHolder = new ViewHolder();
+            viewHolder.networkImageView =
+                    (NetworkImageView) convertView.findViewById(R.id.thumbnail);
+            viewHolder.title = (TextView) convertView.findViewById(R.id.title);
+            viewHolder.commentCount = (TextView) convertView.findViewById(R.id.comment_count);
+            viewHolder.viewCount = (TextView) convertView.findViewById(R.id.view_count);
+
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
 
         // Get a post and its properties
         Post post = posts.get(position);
-        networkImageView.setImageUrl(post.getThumbnailUrl(), imageLoader);
-        title.setText(post.getTitle());
-        commentCount.setText(post.getCommentCount() + " Comment(s)");
-        viewCount.setText(post.getViewCount() + " View(s)\t\t");
+        viewHolder.networkImageView.setImageUrl(post.getThumbnailUrl(), imageLoader);
+        viewHolder.title.setText(post.getTitle());
+        viewHolder.commentCount.setText(post.getCommentCount() + " Comment(s)");
+        viewHolder.viewCount.setText(post.getViewCount() + " View(s)\t\t");
 
         return convertView;
+    }
+
+    // View holder pattern
+    private static class ViewHolder {
+        NetworkImageView networkImageView;
+        TextView title;
+        TextView commentCount;
+        TextView viewCount;
     }
 }

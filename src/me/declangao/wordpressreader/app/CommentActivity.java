@@ -54,7 +54,7 @@ public class CommentActivity extends ActionBarActivity {
 
         // Load Disqus
         webViewComment.loadUrl(url);
-        Log.d("------------------- Comment", disqusThreadId);
+        Log.d("--------------- Comment", disqusThreadId);
     }
 
 

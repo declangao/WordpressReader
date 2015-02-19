@@ -94,7 +94,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             Toast.makeText(MainActivity.this,  "Json Exception. " +
                                     "This is most likely our fault. Please try again later...",
                                     Toast.LENGTH_SHORT).show();
-                            Log.d("-------------------------", "Json Exception");
+                            Log.d("---------------------", "Json Exception");
                             e.printStackTrace();
                         }
                         progressDialog.dismiss();
@@ -104,7 +104,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        Log.d("-------------------------", "Volley Error");
+                        Log.d("---------------------", "Volley Error");
                         Toast.makeText(MainActivity.this, "Network error. Please try again later...",
                                 Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
@@ -138,23 +138,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        /*
-        if (fragmentList.size() > tab.getPosition()) {
-            fragmentList.get(tab.getPosition());
-        }
-        if (f == null) {
-            tf = new TabFragment();
-            Bundle data = new Bundle();
-            data.putInt("index", tab.getPosition());
-            tf.setArguments(data);
-            fragmentList.add(tf);
-        } else {
-            tf = (TabFragment) f;
-        }
-
-        fragmentTransaction.replace(android.R.id.content, tf);
-        */
-
         if (fragmentList.size() > tab.getPosition()) {
             fragmentList.get(tab.getPosition());
         }
