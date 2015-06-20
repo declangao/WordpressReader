@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="me.declangao.wordpressclient.app.PostListFragment">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/swipe_refresh_layout" >
+
+        <!-- Article list -->
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:dividerHeight="3dp"
+            android:id="@+id/listView" />
+
+        <!--<android.support.design.widget.FloatingActionButton-->
+            <!--android:id="@+id/fab"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:layout_marginRight="8dp"-->
+            <!--android:elevation="6dp"-->
+            <!--android:src="@drawable/ic_refresh_white"/>-->
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</FrameLayout>

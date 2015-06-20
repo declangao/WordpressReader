@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WordPress 阅读器</string>
+    <string name="action_settings">设置</string>
+    <string name="action_comments">评论</string>
+    <string name="title_activity_article">文章</string>
+    <string name="title_activity_comment">评论</string>
+    <string name="action_share">分享</string>
+    <string name="tab_all">全部</string>
+    <string name="loading_categories">正在加载分类...</string>
+    <string name="loading_articles">正在加载文章...</string>
+    <string name="action_refresh">刷新</string>
+
+</resources>
