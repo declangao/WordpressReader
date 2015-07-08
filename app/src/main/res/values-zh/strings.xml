@@ -10,5 +10,6 @@
     <string name="loading_categories">正在加载分类...</string>
     <string name="loading_articles">正在加载文章...</string>
     <string name="action_refresh">刷新</string>
+    <string name="action_send_to_wear">发送到手表</string>
 
 </resources>

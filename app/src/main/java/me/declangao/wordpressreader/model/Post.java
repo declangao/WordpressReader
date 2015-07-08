@@ -22,12 +22,6 @@ public class Post {
 
     }
 
-    public Post(String title, String content, String thumbnailUrl) {
-        this.title=title;
-        this.content=content;
-        this.thumbnailUrl=thumbnailUrl;
-    }
-
     public String getTitle() {
         return title;
     }

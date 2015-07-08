@@ -2,11 +2,13 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#3f51b5</item>
+        <item name="colorPrimaryDark">#303f9f</item>
+        <item name="android:navigationBarColor" tools:targetApi="21" >#3f51b5</item>
     </style>
 
-    <!-- Custom App Theme -->
-    <style name="WordPressReader" parent="Theme.AppCompat">
+    <!-- Alternative Theme -->
+    <style name="WordPressReader1" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">#FF5722</item>
         <item name="colorPrimaryDark">#D84315</item>
@@ -16,19 +18,13 @@
 
         <!-- Transparent Navigation Bar -->
         <!--<item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item>-->
-
-        <item name="android:actionBarTabStyle">@style/MyActionBarTabs</item>
-        <!-- Support library compatibility -->
-        <item name="actionBarTabStyle">@style/MyActionBarTabs</item>
     </style>
 
-    <!-- ActionBar tabs styles -->
-    <style name="MyActionBarTabs"
-           parent="@style/Widget.AppCompat.ActionBar.TabView">
-        <!-- tab indicator -->
-        <item name="android:background">@drawable/tab_indicator</item>
-        <!-- Support library compatibility -->
-        <item name="background">@drawable/tab_indicator</item>
+    <!-- Base application theme. -->
+    <style name="WordPressReader2" parent="Theme.AppCompat">
+        <item name="colorPrimary">#FF5722</item>
+        <item name="colorPrimaryDark">#D84315</item>
+        <item name="android:navigationBarColor" tools:targetApi="21" >#FF5722</item>
     </style>
 
 </resources>

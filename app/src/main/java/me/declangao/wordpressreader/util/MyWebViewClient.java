@@ -18,15 +18,15 @@ public class MyWebViewClient extends WebViewClient {
     @Override
     public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
-        if(url.indexOf("logout")>-1 || url.indexOf("login-success")>-1 ){
+        if(url.contains("logout") || url.contains("login-success")){
             Log.d("--- URL login-success: ", url);
             Log.d("--- URL indexof: ", String.valueOf(url.indexOf("login-success")));
 
             view.loadUrl(myUrl);
         }
-        if(url.indexOf("disqus.com/_ax/twitter/complete")>-1||
-                url.indexOf("disqus.com/_ax/facebook/complete")>-1||
-                url.indexOf("disqus.com/_ax/google/complete")>-1){
+        if(url.contains("disqus.com/_ax/twitter/complete") ||
+                url.contains("disqus.com/_ax/facebook/complete") ||
+                url.contains("disqus.com/_ax/google/complete")){
             view.loadUrl(myUrl);
         }
     }

@@ -9,7 +9,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/WordPressReader"
+        android:theme="@style/WordPressReader2"
         android:hardwareAccelerated="true" >
         <activity
             android:name=".app.MainActivity"
@@ -20,19 +20,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".app.ArticleActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_article" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.MainActivity" />
-        </activity>
-        <activity
-            android:name=".app.CommentActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_comment" >
         </activity>
     </application>
 

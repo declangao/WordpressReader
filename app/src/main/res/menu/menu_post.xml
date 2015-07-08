@@ -3,17 +3,25 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="me.declangao.wordpressclient.app.ArticleActivity" >
+
     <!-- Comments menu -->
     <item android:id="@+id/action_comments"
           android:title="@string/action_comments"
           android:icon="@drawable/ic_action_comment"
-          android:orderInCategory="1"
+          android:orderInCategory="0"
           app:showAsAction="always" />
 
-    <!-- ActionBar Share menu -->
+    <!-- Share menu -->
     <item android:id="@+id/action_share"
           android:title="@string/action_share"
-          app:showAsAction="always"
-          app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
-        />
+          android:orderInCategory="1"
+          app:showAsAction="ifRoom"
+          app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
+
+    <!-- Send to Android Wear menu -->
+    <item android:id="@+id/action_send_to_wear"
+          android:title="@string/action_send_to_wear"
+          android:orderInCategory="2"
+          android:icon="@drawable/ic_watch_white_24dp"
+          app:showAsAction="ifRoom" />
 </menu>
