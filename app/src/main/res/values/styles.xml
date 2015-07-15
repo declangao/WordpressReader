@@ -21,10 +21,10 @@
     </style>
 
     <!-- Base application theme. -->
-    <style name="WordPressReader2" parent="Theme.AppCompat">
-        <item name="colorPrimary">#FF5722</item>
-        <item name="colorPrimaryDark">#D84315</item>
-        <item name="android:navigationBarColor" tools:targetApi="21" >#FF5722</item>
+    <style name="WordPressReader2" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor" tools:targetApi="21" >@color/colorPrimary</item>
     </style>
 
 </resources>

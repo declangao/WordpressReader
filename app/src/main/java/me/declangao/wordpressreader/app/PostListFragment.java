@@ -4,6 +4,7 @@ package me.declangao.wordpressreader.app;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -13,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -34,19 +34,19 @@ import me.declangao.wordpressreader.model.Post;
 import me.declangao.wordpressreader.util.Config;
 import me.declangao.wordpressreader.util.JSONParser;
 
+
 /**
- *
- * This Class is currently not in use. Replaced by PostListFragment.
- *
- * Fragment to display main UI, including TabHost and ListView.
+ * Fragment to display main UI, including TabLayout and ListView.
  * Activities that contain this fragment must implement the
  * {@link TabLayoutFragment.OnPostSelectedListener} interface
  * to handle interaction events.
  */
-public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeListener,
-        AdapterView.OnItemClickListener, AbsListView.OnScrollListener,
+public class PostListFragment extends Fragment implements TabLayout.OnTabSelectedListener,
+        AdapterView.OnItemClickListener,
+        AbsListView.OnScrollListener,
         SwipeRefreshLayout.OnRefreshListener {
-    private static final String TAG = "TabLayoutFragment";
+
+    private static final String TAG = "PostListFragment";
 
     // List of all categories
     private ArrayList<Category> categories = null;
@@ -59,10 +59,8 @@ public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeLi
     // Page number
     private int mPage = 1;
 
-    private TabHost mTabHost;
-    private View rootView;
-
     private SwipeRefreshLayout swipeRefreshLayout;
+    private TabLayout tabLayout;
     private ListView listView;
     private PostAdaptor postAdaptor;
 
@@ -71,22 +69,27 @@ public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeLi
 
     private OnPostSelectedListener mListener;
 
-    public TabLayoutFragment() {
+    public PostListFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Stops onDestroy() and onCreate() being called when the parent
+        // activity is destroyed/recreated on configuration change
+        setRetainInstance(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_tab_layout, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_post_list, container, false);
+
         // Pull to refresh layout
-        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout1);
-        listView = (ListView) rootView.findViewById(R.id.list);
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout2);
+        tabLayout = (TabLayout) rootView.findViewById(R.id.tab_layout);
+        listView = (ListView) rootView.findViewById(R.id.list2);
 
         // Display a progress dialog
         mProgressDialog = new ProgressDialog(getActivity());
@@ -94,10 +97,6 @@ public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeLi
         // User cannot dismiss it by touching outside the dialog
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.show();
-
-        // Setup tabs
-        mTabHost = (TabHost) rootView.findViewById(R.id.tabHost);
-        mTabHost.setup();
 
         // Make a request to get categories
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, Config.CATEGORY_URL,
@@ -130,15 +129,6 @@ public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeLi
         // Add the request to request queue
         AppController.getInstance().addToRequestQueue(request);
 
-        setRetainInstance(true);
-
-        return rootView;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
         // Custom list adaptor for Post object
         postAdaptor = new PostAdaptor(getActivity(), postList);
 
@@ -148,6 +138,8 @@ public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeLi
 
         // Pull to refresh listener
         swipeRefreshLayout.setOnRefreshListener(this);
+
+        return rootView;
     }
 
     /**
@@ -157,30 +149,9 @@ public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeLi
      */
     private void createTabs(ArrayList<Category> cats) {
         for (int i = 0; i < cats.size(); i++) {
-            TabHost.TabSpec tab = mTabHost.newTabSpec(String.valueOf(i));
-            tab.setIndicator(cats.get(i).getName());
-            tab.setContent(new TabHost.TabContentFactory() {
-                @Override
-                public View createTabContent(String tag) {
-                    // Content of each tab
-                    return rootView.findViewById(R.id.tab);
-                }
-            });
-            mTabHost.addTab(tab);
+            tabLayout.addTab(tabLayout.newTab().setText(cats.get(i).getName()));
         }
-        //mTabHost.getTabWidget().setStripEnabled(true);
-        mTabHost.setOnTabChangedListener(this);
-    }
-
-    @Override
-    public void onTabChanged(String tabId) {
-        Log.d(TAG, "Showing tab: " + categories.get(Integer.valueOf(tabId)).getName());
-
-        mCatId = categories.get(Integer.valueOf(tabId)).getId();
-        mCatIndex = Integer.valueOf(tabId);
-        mPage = 1; // Set page to 1 to load the first page of a new category
-        postList.clear(); // Clear the list before loading a new category
-        loadPosts();
+        tabLayout.setOnTabSelectedListener(this);
     }
 
     /**
@@ -237,12 +208,12 @@ public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeLi
                         loading = false; // Loading finished. Set flag to false
 
                         // Set ListView position
-                        if (TabLayoutFragment.this.mPage != 1) {
+                        if (PostListFragment.this.mPage != 1) {
                             // Move the article list up by one row
                             listView.setSelection(listView.getFirstVisiblePosition() + 1);
                         }
                         // Prepare for the next page
-                        TabLayoutFragment.this.mPage++;
+                        PostListFragment.this.mPage++;
                     }
                 },
                 new Response.ErrorListener() {
@@ -267,6 +238,27 @@ public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeLi
     }
 
     @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        Log.d(TAG, "Showing tab: " + categories.get(tab.getPosition()).getName());
+
+        mCatId = categories.get(tab.getPosition()).getId();
+        mCatIndex = tab.getPosition();
+        mPage = 1; // Set page to 1 to load the first page of a new category
+        postList.clear(); // Clear the list before loading a new category
+        loadPosts();
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         // Get selected post
         Post p = postList.get(position);
@@ -284,27 +276,28 @@ public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeLi
     }
 
     @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        // Automatically load new posts if end of the list is reached
-        if (visibleItemCount != 0 && totalItemCount > visibleItemCount &&
-                !loading && (firstVisibleItem + visibleItemCount) == totalItemCount) {
-            loading = true;
-            loadPosts();
-        }
-    }
-
-    @Override
     public void onRefresh() {
         mPage = 1; // Refresh only the first page
         // Clear the list
         postList.clear();
         postAdaptor.notifyDataSetChanged();
         loadPosts(mPage, false);
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+                         int totalItemCount) {
+        // Automatically load new posts if end of the list is reached
+        if (visibleItemCount != 0 && totalItemCount > visibleItemCount &&
+                !loading && (firstVisibleItem + visibleItemCount) == totalItemCount) {
+            loading = true;
+            loadPosts();
+        }
     }
 
     @Override
@@ -319,7 +312,7 @@ public class TabLayoutFragment extends Fragment implements TabHost.OnTabChangeLi
         }
     }
 
-    // Interface used to exchange data with MainActivity
+    // Interface used to communicate with MainActivity
     protected interface OnPostSelectedListener {
         void onPostSelected(HashMap<String, String> map);
     }

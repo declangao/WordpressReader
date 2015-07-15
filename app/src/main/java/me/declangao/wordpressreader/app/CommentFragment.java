@@ -5,8 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
@@ -21,6 +19,8 @@ import me.declangao.wordpressreader.util.MyWebViewClient;
 public class CommentFragment extends Fragment {
     private static final String TAG = "CommentFragment";
 
+    private WebView webViewComment;
+
     public CommentFragment() {
         // Required empty public constructor
     }
@@ -28,58 +28,92 @@ public class CommentFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setHasOptionsMenu(true);
+        // Disable Options Menu for this fragment
+        setHasOptionsMenu(false);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Bundle args = getArguments();
-        int id = args.getInt("id");
-
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_comment, container, false);
-
-        // Create disqusThreadId
-        String disqusThreadId = id + " " + Config.BASE_URL + "?p=" + id;
-        // Create Disqus URL for this specific post
-        String url = Config.BASE_URL + "showcomments.php?disqus_id=" + disqusThreadId;
-
+        View rootView = inflater.inflate(R.layout.fragment_comment, container, false);
         // Setup WebView
-        WebView webViewComment = (WebView) v.findViewById(R.id.webView_comment);
-        WebSettings webSettings = webViewComment.getSettings();
-        // Enable JavaScript
-        webSettings.setJavaScriptEnabled(true);
-        // Let the WebView handle links in stead of opening links in external web browsers
-        webViewComment.requestFocusFromTouch();
-        // User a custom WebViewClient to solve Disqus login and logout issues on Android
-        // See http://globeotter.com/blog/disqus-android-code/
-        webViewComment.setWebViewClient(new MyWebViewClient(url));
-        webViewComment.setWebChromeClient(new WebChromeClient());
+        webViewComment = (WebView) rootView.findViewById(R.id.webView_comment);
 
-        // Lollipop only code
-        // Required on Lollipop in order to save login state
-        if (Build.VERSION.SDK_INT >= 21) {
-            // Enable cookies
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webViewComment, true);
-        }
+        //Bundle args = getArguments();
+        //
+        //if (args != null) {
+        //    int id = args.getInt("id");
+        //
+        //    // Create disqusThreadId
+        //    String disqusThreadId = id + " " + Config.BASE_URL + "?p=" + id;
+        //    // Create Disqus URL for this specific post
+        //    String url = Config.BASE_URL + "showcomments.php?disqus_id=" + disqusThreadId;
+        //
+        //    // Setup WebView
+        //    WebView webViewComment = (WebView) v.findViewById(R.id.webView_comment);
+        //    WebSettings webSettings = webViewComment.getSettings();
+        //    // Enable JavaScript
+        //    webSettings.setJavaScriptEnabled(true);
+        //    // Let the WebView handle links in stead of opening links in external web browsers
+        //    webViewComment.requestFocusFromTouch();
+        //    // User a custom WebViewClient to solve Disqus login and logout issues on Android
+        //    // See http://globeotter.com/blog/disqus-android-code/
+        //    webViewComment.setWebViewClient(new MyWebViewClient(url));
+        //    webViewComment.setWebChromeClient(new WebChromeClient());
+        //
+        //    // Lollipop only code
+        //    // Required on Lollipop in order to save login state
+        //    if (Build.VERSION.SDK_INT >= 21) {
+        //        // Enable cookies
+        //        CookieManager.getInstance().setAcceptThirdPartyCookies(webViewComment, true);
+        //    }
+        //
+        //    // Load Disqus
+        //    webViewComment.loadUrl(url);
+        //    Log.d(TAG, "Disqus Thread Id: " + disqusThreadId);
+        //}
 
-        // Load Disqus
-        webViewComment.loadUrl(url);
-        Log.d(TAG, "Disqus Thread Id: " + disqusThreadId);
-
-        return v;
+        return rootView;
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // TODO Properly remove menu
-        // Can't seem to be able to remove the menu with setHasOptionsMenu(false)
-        // So we will just hide all menu items for now
-        menu.findItem(R.id.action_comments).setVisible(false);
-        menu.findItem(R.id.action_share).setVisible(false);
-        menu.findItem(R.id.action_send_to_wear).setVisible(false);
-        super.onCreateOptionsMenu(menu, inflater);
+    /**
+     * Since we can't call setArguments() on an existing fragment, we make our own!
+     *
+     * @param args Bundle containing information about the new comments page
+     */
+    protected void setUIArguments(final Bundle args) {
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                int id = args.getInt("id");
+
+                // Create disqusThreadId
+                String disqusThreadId = id + " " + Config.BASE_URL + "?p=" + id;
+                // Create Disqus URL for this specific post
+                String url = Config.BASE_URL + "showcomments.php?disqus_id=" + disqusThreadId;
+
+
+                WebSettings webSettings = webViewComment.getSettings();
+                // Enable JavaScript
+                webSettings.setJavaScriptEnabled(true);
+                // Let the WebView handle links in stead of opening links in external web browsers
+                webViewComment.requestFocusFromTouch();
+                // User a custom WebViewClient to solve Disqus login and logout issues on Android
+                // See http://globeotter.com/blog/disqus-android-code/
+                webViewComment.setWebViewClient(new MyWebViewClient(url));
+                webViewComment.setWebChromeClient(new WebChromeClient());
+
+                // Lollipop only code
+                // Required on Lollipop in order to save login state
+                if (Build.VERSION.SDK_INT >= 21) {
+                    // Enable cookies
+                    CookieManager.getInstance().setAcceptThirdPartyCookies(webViewComment, true);
+                }
+
+                // Load Disqus
+                webViewComment.loadUrl(url);
+                Log.d(TAG, "Disqus Thread Id: " + disqusThreadId);
+            }
+        });
     }
 }

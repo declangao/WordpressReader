@@ -13,4 +13,7 @@
     <string name="action_refresh">Refresh</string>
     <string name="action_send_to_wear">Send to my watch</string>
 
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

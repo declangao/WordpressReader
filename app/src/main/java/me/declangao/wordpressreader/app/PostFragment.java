@@ -41,6 +41,8 @@ public class PostFragment extends Fragment {
     private String url;
     private String thumbnailUrl;
 
+    private WebView webView;
+
     private OnCommentSelectedListener mListener;
 
     public PostFragment() {
@@ -57,41 +59,85 @@ public class PostFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_post, container, false);
-
-        // Get data
-        Bundle args = getArguments();
-        id = args.getInt("id");
-        title = args.getString("title");
-        String date = args.getString("date");
-        String author = args.getString("author");
-        content = args.getString("content");
-        url = args.getString("url");
-        thumbnailUrl = args.getString("thumbnailUrl");
-
-        // Construct HTML content
-        // First, some CSS
-        String html = "<style>img{max-width:100%;height:auto;} " +
-                "iframe{width:100%;height:56%;}</style> ";
-        // Article Title
-        html += "<h2>" + title +"</h2> ";
-        // Date & author
-        html += "<h4>" + date + " " + author + "</h4>";
-        // The actual content
-        html += content;
-
+        View rootView = inflater.inflate(R.layout.fragment_post, container, false);
         // Create the WebView
-        WebView webView = (WebView) v.findViewById(R.id.webview_post);
-        // Enable JavaScript in order to be able to Play Youtube videos
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebChromeClient(new WebChromeClient());
-        // Load and display HTML content
-        // Use "charset=UTF-8" to support non-English language
-        webView.loadData(html, "text/html; charset=UTF-8", null);
+        webView = (WebView) rootView.findViewById(R.id.webview_post);
 
-        Log.d(TAG, "Showing post, ID: " + id);
+        //// Get data
+        //Bundle args = getArguments();
+        //
+        //if (args != null) {
+        //    id = args.getInt("id");
+        //    title = args.getString("title");
+        //    String date = args.getString("date");
+        //    String author = args.getString("author");
+        //    content = args.getString("content");
+        //    url = args.getString("url");
+        //    thumbnailUrl = args.getString("thumbnailUrl");
+        //
+        //    // Construct HTML content
+        //    // First, some CSS
+        //    String html = "<style>img{max-width:100%;height:auto;} " +
+        //            "iframe{width:100%;height:56%;}</style> ";
+        //    // Article Title
+        //    html += "<h2>" + title +"</h2> ";
+        //    // Date & author
+        //    html += "<h4>" + date + " " + author + "</h4>";
+        //    // The actual content
+        //    html += content;
+        //
+        //    // Create the WebView
+        //    WebView webView = (WebView) v.findViewById(R.id.webview_post);
+        //    // Enable JavaScript in order to be able to Play Youtube videos
+        //    webView.getSettings().setJavaScriptEnabled(true);
+        //    webView.setWebChromeClient(new WebChromeClient());
+        //    // Load and display HTML content
+        //    // Use "charset=UTF-8" to support non-English language
+        //    webView.loadData(html, "text/html; charset=UTF-8", null);
+        //
+        //    Log.d(TAG, "Showing post, ID: " + id);
+        //}
 
-        return v;
+        return rootView;
+    }
+
+    /**
+     * Since we can't call setArguments() on an existing fragment, we make our own!
+     *
+     * @param args Bundle containing information about the new post
+     */
+    protected void setUIArguments(final Bundle args) {
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                id = args.getInt("id");
+                title = args.getString("title");
+                String date = args.getString("date");
+                String author = args.getString("author");
+                content = args.getString("content");
+                url = args.getString("url");
+                thumbnailUrl = args.getString("thumbnailUrl");
+
+                // Construct HTML content
+                // First, some CSS
+                String html = "<style>img{max-width:100%;height:auto;} " +
+                        "iframe{width:100%;height:56%;}</style> ";
+                // Article Title
+                html += "<h2>" + title +"</h2> ";
+                // Date & author
+                html += "<h4>" + date + " " + author + "</h4>";
+                // The actual content
+                html += content;
+
+                // Enable JavaScript in order to be able to Play Youtube videos
+                webView.getSettings().setJavaScriptEnabled(true);
+                webView.setWebChromeClient(new WebChromeClient());
+                // Load and display HTML content
+                // Use "charset=UTF-8" to support non-English language
+                webView.loadData(html, "text/html; charset=UTF-8", null);
+
+                Log.d(TAG, "Showing post, ID: " + id);
+            }
+        });
     }
 
     @Override
