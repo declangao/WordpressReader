@@ -1,30 +1,34 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">#3f51b5</item>
-        <item name="colorPrimaryDark">#303f9f</item>
-        <item name="android:navigationBarColor" tools:targetApi="21" >#3f51b5</item>
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor" tools:targetApi="21" >@color/colorPrimary</item>
     </style>
 
     <!-- Alternative Theme -->
-    <style name="WordPressReader1" parent="Theme.AppCompat">
+    <style name="WordPressReader" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">#FF5722</item>
         <item name="colorPrimaryDark">#D84315</item>
         <item name="android:textColorPrimary">#ffffff</item>
         <item name="android:textColorSecondary">#000000</item>
         <item name="android:navigationBarColor" tools:targetApi="21" >#FF5722</item>
-
         <!-- Transparent Navigation Bar -->
         <!--<item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item>-->
     </style>
 
-    <!-- Base application theme. -->
-    <style name="WordPressReader2" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:navigationBarColor" tools:targetApi="21" >@color/colorPrimary</item>
+    <!-- Custom widget styles -->
+    <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">@color/colorPrimaryDark</item>
+        <item name="tabBackground">@color/colorPrimary</item>
+        <!--<item name="tabSelectedTextColor">#FF8A65</item>-->
+        <item name="tabTextAppearance">@style/CustomTabTextAppearance</item>
+    </style>
+    <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#FFAB91</item>
     </style>
 
 </resources>

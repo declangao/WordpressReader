@@ -24,6 +24,9 @@ Remember to set your own WordPress URL in Config.java before trying it out.
 
 I used [Disqus](https://disqus.com/) commenting system to remedy the  spamming issue. So you will need to have Disqus installed on your WordPress site as well. If you want to use WordPress's own comment function, you need to modify the code to read comments from API instead of rendering a Disqus webpage.
 
+## Todo
+* Add collapsing Toolbar
+
 ## Screenshots
 ![Main GUI](http://i.imgur.com/NL1Jyqb.png)
 

@@ -4,6 +4,7 @@ package me.declangao.wordpressreader.app;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -38,7 +39,7 @@ import me.declangao.wordpressreader.util.JSONParser;
 /**
  * Fragment to display main UI, including TabLayout and ListView.
  * Activities that contain this fragment must implement the
- * {@link TabLayoutFragment.OnPostSelectedListener} interface
+ * {@link PostListFragment.OnPostSelectedListener} interface
  * to handle interaction events.
  */
 public class PostListFragment extends Fragment implements TabLayout.OnTabSelectedListener,
@@ -53,16 +54,18 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
     // List of all posts in the ListView
     private ArrayList<Post> postList = new ArrayList<>();
 
-    private ProgressDialog mProgressDialog;
     private int mCatIndex; // Category index in the tabs
     private int mCatId; // Category ID
     // Page number
     private int mPage = 1;
 
+    private ProgressDialog mProgressDialog;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TabLayout tabLayout;
     private ListView listView;
     private PostAdaptor postAdaptor;
+    private FrameLayout frameLayout;
+
 
     // A flag to keep track if the app is currently loading new posts
     private boolean loading = false;
@@ -90,7 +93,28 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
         swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout2);
         tabLayout = (TabLayout) rootView.findViewById(R.id.tab_layout);
         listView = (ListView) rootView.findViewById(R.id.list2);
+        frameLayout = (FrameLayout) rootView.findViewById(R.id.frame_container);
 
+        // Custom list adaptor for Post object
+        postAdaptor = new PostAdaptor(getActivity(), postList);
+
+        listView.setAdapter(postAdaptor);
+        listView.setOnItemClickListener(this);
+        listView.setOnScrollListener(this);
+
+        // Pull to refresh listener
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        loadCategories();
+
+        return rootView;
+    }
+
+    /**
+     * Load categories
+     *
+     */
+    private void loadCategories() {
         // Display a progress dialog
         mProgressDialog = new ProgressDialog(getActivity());
         mProgressDialog.setMessage(getString(R.string.loading_categories));
@@ -122,24 +146,18 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
                     public void onErrorResponse(VolleyError volleyError) {
                         Log.d(TAG, "----- Volley Error -----");
                         mProgressDialog.dismiss();
-                        //Toast.makeText(MainActivity.this, "Network error. Please try again later...",
-                        //        Toast.LENGTH_SHORT).show();
+                        Snackbar.make(frameLayout, R.string.error_load_categories,
+                                Snackbar.LENGTH_LONG).setAction(R.string.action_retry,
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        loadCategories();
+                                    }
+                                }).show();
                     }
                 });
         // Add the request to request queue
         AppController.getInstance().addToRequestQueue(request);
-
-        // Custom list adaptor for Post object
-        postAdaptor = new PostAdaptor(getActivity(), postList);
-
-        listView.setAdapter(postAdaptor);
-        listView.setOnItemClickListener(this);
-        listView.setOnScrollListener(this);
-
-        // Pull to refresh listener
-        swipeRefreshLayout.setOnRefreshListener(this);
-
-        return rootView;
     }
 
     /**
@@ -223,8 +241,14 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
                         swipeRefreshLayout.setRefreshing(false);
                         volleyError.printStackTrace();
                         Log.d(TAG, "----- Error: " + volleyError.getMessage());
-                        Toast.makeText(getActivity(), "Network error. Please try again later...",
-                                Toast.LENGTH_SHORT).show();
+                        Snackbar.make(frameLayout, R.string.error_load_posts,
+                                Snackbar.LENGTH_LONG).setAction(R.string.action_retry,
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        loadPosts();
+                                    }
+                                }).show();
                     }
                 });
 
