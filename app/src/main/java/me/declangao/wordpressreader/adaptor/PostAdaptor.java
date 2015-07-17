@@ -18,7 +18,7 @@ import me.declangao.wordpressreader.model.Post;
 import me.declangao.wordpressreader.R;
 
 /**
- * Created by Declan on 16/01/15.
+ * Custom adaptor for the ListView
  */
 public class PostAdaptor extends BaseAdapter {
     private Activity activity;

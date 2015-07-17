@@ -14,7 +14,7 @@ import me.declangao.wordpressreader.model.Category;
 import me.declangao.wordpressreader.model.Post;
 
 /**
- * Created by Declan on 20/06/15.
+ * Utility class used to parse JSON data
  */
 public class JSONParser {
     private static final String	TAG	= "JSONParser";
@@ -23,6 +23,7 @@ public class JSONParser {
      * Parse JSON data and return an ArrayList of Category objects
      *
      * @param jsonObject JSON data
+     * @return A list of Category objects
      */
     public static ArrayList<Category> parseCategories(JSONObject jsonObject) {
         ArrayList<Category> categoryArrayList = new ArrayList<>();
@@ -62,6 +63,7 @@ public class JSONParser {
      * Parse JSON data and return an ArrayList of Post objects
      *
      * @param jsonObject JSON data
+     * @return A list of Post objects
      */
     public static ArrayList<Post> parsePosts(JSONObject jsonObject) {
         ArrayList<Post> posts = new ArrayList<>();

@@ -27,7 +27,7 @@ import com.android.volley.toolbox.ImageRequest;
 import me.declangao.wordpressreader.R;
 
 /**
- * Fragment to display content of an article in a WebView.
+ * Fragment to display content of a post in a WebView.
  * Activities that contain this fragment must implement the
  * {@link PostFragment.OnCommentSelectedListener} interface
  * to handle interaction events.
@@ -62,41 +62,6 @@ public class PostFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_post, container, false);
         // Create the WebView
         webView = (WebView) rootView.findViewById(R.id.webview_post);
-
-        //// Get data
-        //Bundle args = getArguments();
-        //
-        //if (args != null) {
-        //    id = args.getInt("id");
-        //    title = args.getString("title");
-        //    String date = args.getString("date");
-        //    String author = args.getString("author");
-        //    content = args.getString("content");
-        //    url = args.getString("url");
-        //    thumbnailUrl = args.getString("thumbnailUrl");
-        //
-        //    // Construct HTML content
-        //    // First, some CSS
-        //    String html = "<style>img{max-width:100%;height:auto;} " +
-        //            "iframe{width:100%;height:56%;}</style> ";
-        //    // Article Title
-        //    html += "<h2>" + title +"</h2> ";
-        //    // Date & author
-        //    html += "<h4>" + date + " " + author + "</h4>";
-        //    // The actual content
-        //    html += content;
-        //
-        //    // Create the WebView
-        //    WebView webView = (WebView) v.findViewById(R.id.webview_post);
-        //    // Enable JavaScript in order to be able to Play Youtube videos
-        //    webView.getSettings().setJavaScriptEnabled(true);
-        //    webView.setWebChromeClient(new WebChromeClient());
-        //    // Load and display HTML content
-        //    // Use "charset=UTF-8" to support non-English language
-        //    webView.loadData(html, "text/html; charset=UTF-8", null);
-        //
-        //    Log.d(TAG, "Showing post, ID: " + id);
-        //}
 
         return rootView;
     }
@@ -174,6 +139,9 @@ public class PostFragment extends Fragment {
         }
     }
 
+    /**
+     * Send a BigTextStyle notification with text contents of the post to Android Wear devices
+     */
     private void sendToWear() {
         // Intent used to run app on the phone from watch
         Intent viewIntent = new Intent(getActivity(), MainActivity.class);

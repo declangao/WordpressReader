@@ -2,10 +2,8 @@ package me.declangao.wordpressreader.app;
 
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
@@ -16,6 +14,8 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -27,10 +27,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import me.declangao.wordpressreader.R;
 import me.declangao.wordpressreader.adaptor.PostAdaptor;
-import me.declangao.wordpressreader.model.Category;
 import me.declangao.wordpressreader.model.Post;
 import me.declangao.wordpressreader.util.Config;
 import me.declangao.wordpressreader.util.JSONParser;
@@ -42,35 +43,45 @@ import me.declangao.wordpressreader.util.JSONParser;
  * {@link PostListFragment.OnPostSelectedListener} interface
  * to handle interaction events.
  */
-public class PostListFragment extends Fragment implements TabLayout.OnTabSelectedListener,
-        AdapterView.OnItemClickListener,
+public class PostListFragment extends Fragment implements AdapterView.OnItemClickListener,
         AbsListView.OnScrollListener,
         SwipeRefreshLayout.OnRefreshListener {
-
     private static final String TAG = "PostListFragment";
+    private static final String CAT_ID = "id";
 
-    // List of all categories
-    private ArrayList<Category> categories = null;
-    // List of all posts in the ListView
-    private ArrayList<Post> postList = new ArrayList<>();
-
-    private int mCatIndex; // Category index in the tabs
-    private int mCatId; // Category ID
-    // Page number
-    private int mPage = 1;
-
-    private ProgressDialog mProgressDialog;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private TabLayout tabLayout;
     private ListView listView;
     private PostAdaptor postAdaptor;
     private FrameLayout frameLayout;
+    // Widget to show user a loading message
+    private TextView tvLoading;
 
-
+    // List of all posts in the ListView
+    private ArrayList<Post> postList = new ArrayList<>();
     // A flag to keep track if the app is currently loading new posts
-    private boolean loading = false;
+    private boolean isLoading = false;
+
+    private int mPage = 1; // Page number
+    private int mCatId; // Category ID
+    private int mPreviousPostNum = 0; // Number of posts in the list
+    private int mPostNum; // Number of posts in the "new" list
 
     private OnPostSelectedListener mListener;
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param id ID of the category.
+     * @return A new instance of PostListFragment.
+     */
+    public static PostListFragment newInstance(int id) {
+        PostListFragment fragment = new PostListFragment();
+        Bundle args = new Bundle();
+        args.putInt(CAT_ID, id);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public PostListFragment() {
         // Required empty public constructor
@@ -79,21 +90,25 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Stops onDestroy() and onCreate() being called when the parent
-        // activity is destroyed/recreated on configuration change
-        setRetainInstance(true);
+        if (getArguments() != null) {
+            mCatId = getArguments().getInt(CAT_ID);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_post_list, container, false);
 
         // Pull to refresh layout
-        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout2);
-        tabLayout = (TabLayout) rootView.findViewById(R.id.tab_layout);
-        listView = (ListView) rootView.findViewById(R.id.list2);
-        frameLayout = (FrameLayout) rootView.findViewById(R.id.frame_container);
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout);
+        listView = (ListView) rootView.findViewById(R.id.list_view);
+        frameLayout = (FrameLayout) rootView.findViewById(R.id.post_list_container);
+        tvLoading = (TextView) rootView.findViewById(R.id.text_view_loading);
+
+        // Pull to refresh listener
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         // Custom list adaptor for Post object
         postAdaptor = new PostAdaptor(getActivity(), postList);
@@ -102,81 +117,35 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
         listView.setOnItemClickListener(this);
         listView.setOnScrollListener(this);
 
-        // Pull to refresh listener
-        swipeRefreshLayout.setOnRefreshListener(this);
-
-        loadCategories();
-
         return rootView;
     }
 
-    /**
-     * Load categories
-     *
-     */
-    private void loadCategories() {
-        // Display a progress dialog
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setMessage(getString(R.string.loading_categories));
-        // User cannot dismiss it by touching outside the dialog
-        mProgressDialog.setCanceledOnTouchOutside(false);
-        mProgressDialog.show();
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        // Make a request to get categories
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, Config.CATEGORY_URL,
-                null,
-                new Response.Listener<JSONObject>() {
-                    // Request succeeded
-                    @Override
-                    public void onResponse(JSONObject jsonObject) {
-                        Log.d(TAG, "JSON Dump:\n" + jsonObject.toString());
-                        mProgressDialog.dismiss();
-
-                        // Get categories from JSON data
-                        categories = JSONParser.parseCategories(jsonObject);
-                        // Create tabs for each category
-                        createTabs(categories);
-                        // Load the first page of "All" category
-                        loadPosts();
-                    }
-                },
-                // Request failed
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Log.d(TAG, "----- Volley Error -----");
-                        mProgressDialog.dismiss();
-                        Snackbar.make(frameLayout, R.string.error_load_categories,
-                                Snackbar.LENGTH_LONG).setAction(R.string.action_retry,
-                                new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        loadCategories();
-                                    }
-                                }).show();
-                    }
-                });
-        // Add the request to request queue
-        AppController.getInstance().addToRequestQueue(request);
+        loadFirstPage();
     }
 
     /**
-     * Create tabs for all categories
-     *
-     * @param cats Category object ArrayList
+     * Load the first page of a category
      */
-    private void createTabs(ArrayList<Category> cats) {
-        for (int i = 0; i < cats.size(); i++) {
-            tabLayout.addTab(tabLayout.newTab().setText(cats.get(i).getName()));
+    public void loadFirstPage(){
+        mPage = 1; // Reset page number
+
+        if (postList.isEmpty()) {
+            showLoadingView();
+            loadPosts(mPage, false);
+        } else {
+            hideLoadingView();
         }
-        tabLayout.setOnTabSelectedListener(this);
     }
 
     /**
-     * Load posts
-     *
+     * Load the next page of a category
      */
-    public void loadPosts(){
+    public void loadNextPage(){
+        mPage ++;
         loadPosts(mPage, true);
     }
 
@@ -184,19 +153,17 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
      * Load posts from a specific page number
      *
      * @param page Page number
-     * @param showProgressDialog flag to determine whether to show a ProgressDialog
+     * @param showLoadingMsg Flag to determine whether to show the loading msg to inform the user
      */
-    private void loadPosts(int page, final boolean showProgressDialog) {
-        Log.d(TAG, "----------------- Loading category " +
-                categories.get(mCatIndex).getName() + ", page " + String.valueOf(page));
+    private void loadPosts(int page, final boolean showLoadingMsg) {
+        Log.d(TAG, "----------------- Loading category id " + mCatId +
+                ", page " + String.valueOf(page));
 
-        loading = true;
+        isLoading = true;
 
-        if (showProgressDialog) {
-            mProgressDialog = new ProgressDialog(getActivity());
-            mProgressDialog.setMessage(getString(R.string.loading_articles));
-            mProgressDialog.setCanceledOnTouchOutside(false);
-            mProgressDialog.show();
+        if (showLoadingMsg) {
+            Toast.makeText(getActivity(), getString(R.string.loading_articles),
+                    Toast.LENGTH_LONG).show();
         }
 
         // Construct the proper API Url
@@ -204,8 +171,8 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
         if (mCatId == 0) { // The "All" tab
             url = Config.BASE_URL + "?json=get_posts&page=" + String.valueOf(page);
         } else { // Everything else
-            url = Config.BASE_URL + "?json=get_category_posts&category_id=" +
-                    String.valueOf(mCatId) + "&page=" + String.valueOf(page);
+            url = Config.BASE_URL + "?json=get_category_posts&category_id=" + String.valueOf(mCatId)
+                    + "&page=" + String.valueOf(page);
         }
 
         Log.d(TAG, url);
@@ -214,39 +181,52 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-                        if (showProgressDialog) {
-                            mProgressDialog.dismiss();
-                        }
                         swipeRefreshLayout.setRefreshing(false); // Stop when done
 
                         // Parse JSON data
                         postList.addAll(JSONParser.parsePosts(jsonObject));
-                        postAdaptor.notifyDataSetChanged(); // Display the list
 
-                        loading = false; // Loading finished. Set flag to false
+                        // A temporary workaround to avoid duplicate posts in some rare
+                        // circumstances by converting ArrayList to a LinkedHashSet
+                        // without losing its order
+                        Set<Post> set = new LinkedHashSet<>(postList);
+                        postList.clear();
+                        postList.addAll(new ArrayList<>(set));
+
+                        mPostNum = postList.size(); // The newest post number
+                        Log.d(TAG, "Number of posts: " + mPostNum);
+                        postAdaptor.notifyDataSetChanged(); // Display the list
 
                         // Set ListView position
                         if (PostListFragment.this.mPage != 1) {
                             // Move the article list up by one row
                             listView.setSelection(listView.getFirstVisiblePosition() + 1);
                         }
-                        // Prepare for the next page
-                        PostListFragment.this.mPage++;
+
+                        // Loading finished. Set flag to false
+                        isLoading = false;
+
+                        hideLoadingView();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        mProgressDialog.dismiss();
+                        isLoading = false;
+                        hideLoadingView();
                         swipeRefreshLayout.setRefreshing(false);
+
                         volleyError.printStackTrace();
                         Log.d(TAG, "----- Error: " + volleyError.getMessage());
+
+                        // Show a Snackbar with a retry button
                         Snackbar.make(frameLayout, R.string.error_load_posts,
                                 Snackbar.LENGTH_LONG).setAction(R.string.action_retry,
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        loadPosts();
+                                        //loadFirstPage();
+                                        loadPosts(mPage, true);
                                     }
                                 }).show();
                     }
@@ -259,27 +239,6 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
 
         // Add request to request queue
         AppController.getInstance().addToRequestQueue(request, TAG);
-    }
-
-    @Override
-    public void onTabSelected(TabLayout.Tab tab) {
-        Log.d(TAG, "Showing tab: " + categories.get(tab.getPosition()).getName());
-
-        mCatId = categories.get(tab.getPosition()).getId();
-        mCatIndex = tab.getPosition();
-        mPage = 1; // Set page to 1 to load the first page of a new category
-        postList.clear(); // Clear the list before loading a new category
-        loadPosts();
-    }
-
-    @Override
-    public void onTabUnselected(TabLayout.Tab tab) {
-
-    }
-
-    @Override
-    public void onTabReselected(TabLayout.Tab tab) {
-
     }
 
     @Override
@@ -301,11 +260,10 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
 
     @Override
     public void onRefresh() {
-        mPage = 1; // Refresh only the first page
         // Clear the list
         postList.clear();
         postAdaptor.notifyDataSetChanged();
-        loadPosts(mPage, false);
+        loadFirstPage();
     }
 
     @Override
@@ -314,13 +272,25 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
     }
 
     @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-                         int totalItemCount) {
+    public void onScroll(AbsListView view, int firstVisibleItem,
+                         int visibleItemCount, int totalItemCount) {
         // Automatically load new posts if end of the list is reached
-        if (visibleItemCount != 0 && totalItemCount > visibleItemCount &&
-                !loading && (firstVisibleItem + visibleItemCount) == totalItemCount) {
-            loading = true;
-            loadPosts();
+        if (mPostNum > mPreviousPostNum && !postList.isEmpty() && visibleItemCount != 0 &&
+                totalItemCount > visibleItemCount && !isLoading &&
+                (firstVisibleItem + visibleItemCount) == totalItemCount) {
+            loadNextPage();
+            // Update post number
+            mPreviousPostNum = mPostNum;
+            //
+            //if (mPostNum > mPreviousPostNum) {
+            //    //loading = true;
+            //    loadNextPage();
+            //    mPreviousPostNum = mPostNum;
+            //} else {
+            //    Log.d(TAG, "Showing toast!");
+            //    Toast.makeText(getActivity(), "You have reached the end!",
+            //            Toast.LENGTH_SHORT).show();
+            //}
         }
     }
 
@@ -339,5 +309,21 @@ public class PostListFragment extends Fragment implements TabLayout.OnTabSelecte
     // Interface used to communicate with MainActivity
     protected interface OnPostSelectedListener {
         void onPostSelected(HashMap<String, String> map);
+    }
+
+    /**
+     * Show the loading view and hide the list
+     */
+    private void showLoadingView() {
+        listView.setVisibility(View.INVISIBLE);
+        tvLoading.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Hide the loading view and show the list
+     */
+    private void hideLoadingView() {
+        tvLoading.setVisibility(View.INVISIBLE);
+        listView.setVisibility(View.VISIBLE);
     }
 }

@@ -22,6 +22,24 @@ public class Post {
 
     }
 
+    /**
+     * Override equals method to help Set decide if two posts are the same
+     *
+     * @param o Another object
+     */
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Post && this.getId() == (((Post) o).getId());
+    }
+
+    /**
+     * Override hashCode method to help Set decide if two posts are the same
+     */
+    @Override
+    public int hashCode() {
+        return this.getId();
+    }
+
     public String getTitle() {
         return title;
     }

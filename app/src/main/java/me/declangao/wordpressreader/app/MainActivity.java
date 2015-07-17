@@ -5,23 +5,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import java.util.HashMap;
 
 import me.declangao.wordpressreader.R;
 
-
 public class MainActivity extends AppCompatActivity implements
         PostListFragment.OnPostSelectedListener,
         PostFragment.OnCommentSelectedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
-    public static final String POST_LIST_FRAGMENT_TAG = "PostListFragment";
+    public static final String TAB_LAYOUT_FRAGMENT_TAG = "TabLayoutFragment";
     public static final String POST_FRAGMENT_TAG = "PostFragment";
     public static final String COMMENT_FRAGMENT_TAG = "CommentFragment";
 
     private FragmentManager fm = null;
-    private PostListFragment plf;
+    private TabLayoutFragment tlf;
     private PostFragment pf;
     private CommentFragment cf;
 
@@ -30,24 +28,24 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Setup action bar with the new toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         fm = getSupportFragmentManager();
 
         // Setup fragments
-        plf = new PostListFragment();
+        tlf = new TabLayoutFragment();
         pf = new PostFragment();
         cf = new CommentFragment();
+
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.container, pf, POST_FRAGMENT_TAG);
         ft.add(R.id.container, cf, COMMENT_FRAGMENT_TAG);
-        ft.add(R.id.container, plf, POST_LIST_FRAGMENT_TAG);
+        ft.add(R.id.container, tlf, TAB_LAYOUT_FRAGMENT_TAG);
         ft.hide(pf);
         ft.hide(cf);
         ft.commit();
-
-        Log.d(TAG, "Fragment Transaction committed");
     }
 
     /**
@@ -57,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onPostSelected(HashMap<String, String> map) {
-        //pf = new PostFragment();
         pf = (PostFragment) getSupportFragmentManager().findFragmentByTag(POST_FRAGMENT_TAG);
         // Set necessary arguments
         Bundle args = new Bundle();
@@ -69,10 +66,11 @@ public class MainActivity extends AppCompatActivity implements
         args.putString("url", map.get("url"));
         args.putString("thumbnailUrl", map.get("thumbnailURL"));
         //pf.setArguments(args);
+        // Setup PostFragment to display the right post
         pf.setUIArguments(args);
 
         FragmentTransaction ft = fm.beginTransaction();
-        ft.hide(plf);
+        ft.hide(tlf);
         ft.show(pf);
         ft.addToBackStack(null);
         ft.commit();
@@ -85,17 +83,16 @@ public class MainActivity extends AppCompatActivity implements
      */
     @Override
     public void onCommentSelected(int id) {
-        //cf = new CommentFragment();
         cf = (CommentFragment) getSupportFragmentManager().findFragmentByTag(COMMENT_FRAGMENT_TAG);
         Bundle args = new Bundle();
         args.putInt("id", id);
         //cf.setArguments(args);
+        // Setup CommentFragment to display the right comments page
         cf.setUIArguments(args);
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.hide(pf);
         ft.show(cf);
-        //ft.add(R.id.container, cf);
         ft.addToBackStack(null);
         ft.commit();
     }

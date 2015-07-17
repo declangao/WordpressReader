@@ -1,7 +1,7 @@
 package me.declangao.wordpressreader.model;
 
 /**
- * Created by Declan on 7/07/15.
+ * Category object
  */
 public class Category {
     private String name;

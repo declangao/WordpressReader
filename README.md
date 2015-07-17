@@ -5,6 +5,8 @@ A proof of concept app to demonstrate Google's [Volley](https://android.googleso
 * Asynchronous HTTP request
 * AppCompat Material Design
 * Pull to refresh
+* ViewPager
+* NestedFragments
 * JSON parsing
 * Android Wear notification (in case you want to read an article on your watch for god-knows-what reason)
 
@@ -25,10 +27,12 @@ Remember to set your own WordPress URL in Config.java before trying it out.
 I used [Disqus](https://disqus.com/) commenting system to remedy the  spamming issue. So you will need to have Disqus installed on your WordPress site as well. If you want to use WordPress's own comment function, you need to modify the code to read comments from API instead of rendering a Disqus webpage.
 
 ## Todo
-* Add collapsing Toolbar
+1. Add collapsing Toolbar
+2. Use RecyclerView
+3. Switch to OkHttp
 
 ## Screenshots
-![Main GUI](http://i.imgur.com/NL1Jyqb.png)
+![Main GUI](http://i.imgur.com/T4rop7l.png)
 
 *Main GUI*
 
