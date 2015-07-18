@@ -1,6 +1,5 @@
 package me.declangao.wordpressreader.app;
 
-
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -23,19 +22,21 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import me.declangao.wordpressreader.R;
-import me.declangao.wordpressreader.adaptor.PostListFragmentPagerAdaptor;
+import me.declangao.wordpressreader.adaptor.RecyclerViewFragmentPagerAdaptor;
 import me.declangao.wordpressreader.model.Category;
 import me.declangao.wordpressreader.util.Config;
 import me.declangao.wordpressreader.util.JSONParser;
 
-
+/**
+ * Fragment to display TabLayout and ViewPager.
+ */
 public class TabLayoutFragment extends Fragment {
     private static final String TAG = "TabLayoutFragment";
 
     private ProgressDialog mProgressDialog;
-    private TabLayout tabLayout;
-    private FrameLayout frameLayout;
-    private ViewPager viewPager;
+    private TabLayout mTabLayout;
+    private FrameLayout mFrameLayout;
+    private ViewPager mViewPager;
 
     // List of all categories
     protected static ArrayList<Category> categories = null;
@@ -58,11 +59,11 @@ public class TabLayoutFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_tab_layout, container, false);
 
-        tabLayout = (TabLayout) rootView.findViewById(R.id.tab_layout);
-        frameLayout = (FrameLayout) rootView.findViewById(R.id.frame_container);
-        viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
-        // Preload 1 page to either side of the current tab
-        viewPager.setOffscreenPageLimit(1);
+        mTabLayout = (TabLayout) rootView.findViewById(R.id.tab_layout);
+        mFrameLayout = (FrameLayout) rootView.findViewById(R.id.frame_container);
+        mViewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
+        // Preload 1 page to either side of the current page
+        mViewPager.setOffscreenPageLimit(1);
 
         return rootView;
     }
@@ -76,7 +77,6 @@ public class TabLayoutFragment extends Fragment {
 
     /**
      * Download categories and create tabs
-     *
      */
     private void loadCategories() {
         // Display a progress dialog
@@ -98,10 +98,10 @@ public class TabLayoutFragment extends Fragment {
                         // Get categories from JSON data
                         categories = JSONParser.parseCategories(jsonObject);
 
-                        PostListFragmentPagerAdaptor adaptor = new
-                                PostListFragmentPagerAdaptor(getChildFragmentManager(), categories);
-                        viewPager.setAdapter(adaptor);
-                        tabLayout.setupWithViewPager(viewPager);
+                        RecyclerViewFragmentPagerAdaptor adaptor = new
+                                RecyclerViewFragmentPagerAdaptor(getChildFragmentManager(), categories);
+                        mViewPager.setAdapter(adaptor);
+                        mTabLayout.setupWithViewPager(mViewPager);
                     }
                 },
                 // Request failed
@@ -110,8 +110,9 @@ public class TabLayoutFragment extends Fragment {
                     public void onErrorResponse(VolleyError volleyError) {
                         Log.d(TAG, "----- Volley Error -----");
                         mProgressDialog.dismiss();
-                        Snackbar.make(frameLayout, R.string.error_load_categories,
-                                Snackbar.LENGTH_LONG).setAction(R.string.action_retry,
+                        // Show an INDEFINITE Snackbar. New in design support lib v22.2.1.
+                        Snackbar.make(mFrameLayout, R.string.error_load_categories,
+                                Snackbar.LENGTH_INDEFINITE).setAction(R.string.action_retry,
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {

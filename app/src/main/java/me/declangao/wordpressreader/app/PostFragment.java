@@ -52,6 +52,9 @@ public class PostFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setRetainInstance(true);
+
         // Needed to show Options Menu
         setHasOptionsMenu(true);
     }
@@ -71,7 +74,7 @@ public class PostFragment extends Fragment {
      *
      * @param args Bundle containing information about the new post
      */
-    protected void setUIArguments(final Bundle args) {
+    public void setUIArguments(final Bundle args) {
         getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 id = args.getInt("id");

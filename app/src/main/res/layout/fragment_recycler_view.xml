@@ -2,25 +2,27 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:id="@+id/post_list_container"
-             tools:context="me.declangao.wordpressreader.app.PostListFragment">
+             android:id="@+id/recycler_view_container"
+             tools:context="me.declangao.wordpressreader.app.RecyclerViewFragment">
 
     <!-- Article list -->
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/swipe_refresh_layout" >
-        <ListView
+
+        <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:dividerHeight="3dp"
-            android:id="@+id/list_view" />
+            android:id="@+id/recycler_view" />
+
     </android.support.v4.widget.SwipeRefreshLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/text_view_loading"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:gravity="center"
         android:text="@string/loading_articles"/>
 

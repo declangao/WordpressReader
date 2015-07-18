@@ -6,12 +6,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import java.util.HashMap;
-
 import me.declangao.wordpressreader.R;
+import me.declangao.wordpressreader.model.Post;
 
 public class MainActivity extends AppCompatActivity implements
-        PostListFragment.OnPostSelectedListener,
+        RecyclerViewFragment.OnPostSelectedListener,
         PostFragment.OnCommentSelectedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String TAB_LAYOUT_FRAGMENT_TAG = "TabLayoutFragment";
@@ -49,26 +48,29 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Invoked when an article in a list is selected
+     * Invoked when a post in the list is selected
      *
-     * @param map HashMap that stores properties of a Post object
+     * @param post Selected Post object
      */
     @Override
-    public void onPostSelected(HashMap<String, String> map) {
+    public void onPostSelected(Post post) {
+        // Find the fragment in order to set it up later
         pf = (PostFragment) getSupportFragmentManager().findFragmentByTag(POST_FRAGMENT_TAG);
+
         // Set necessary arguments
         Bundle args = new Bundle();
-        args.putInt("id", Integer.valueOf(map.get("id")));
-        args.putString("title", map.get("title"));
-        args.putString("date", map.get("date"));
-        args.putString("author", map.get("author"));
-        args.putString("content", map.get("content"));
-        args.putString("url", map.get("url"));
-        args.putString("thumbnailUrl", map.get("thumbnailURL"));
+        args.putInt("id", post.getId());
+        args.putString("title", post.getTitle());
+        args.putString("date", post.getDate());
+        args.putString("author", post.getAuthor());
+        args.putString("content", post.getContent());
+        args.putString("url", post.getUrl());
+        args.putString("thumbnailUrl", post.getThumbnailUrl());
         //pf.setArguments(args);
-        // Setup PostFragment to display the right post
+        // Configure PostFragment to display the right post
         pf.setUIArguments(args);
 
+        // Show the fragment
         FragmentTransaction ft = fm.beginTransaction();
         ft.hide(tlf);
         ft.show(pf);
@@ -96,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements
         ft.addToBackStack(null);
         ft.commit();
     }
-
 
     // Commented out coz we will let fragments handle their own Options Menus
     //@Override

@@ -6,23 +6,23 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import java.util.ArrayList;
 
-import me.declangao.wordpressreader.app.PostListFragment;
+import me.declangao.wordpressreader.app.RecyclerViewFragment;
 import me.declangao.wordpressreader.model.Category;
 
 /**
  * Adaptor for ViewPager
  */
-public class PostListFragmentPagerAdaptor extends FragmentPagerAdapter {
+public class RecyclerViewFragmentPagerAdaptor extends FragmentPagerAdapter {
     private ArrayList<Category> categories;
 
-    public PostListFragmentPagerAdaptor(FragmentManager fm, ArrayList<Category> categories) {
+    public RecyclerViewFragmentPagerAdaptor(FragmentManager fm, ArrayList<Category> categories) {
         super(fm);
         this.categories = categories;
     }
 
     @Override
     public Fragment getItem(int position) {
-        return PostListFragment.newInstance(categories.get(position).getId());
+        return RecyclerViewFragment.newInstance(categories.get(position).getId());
     }
 
     @Override

@@ -4,9 +4,10 @@ A proof of concept app to demonstrate Google's [Volley](https://android.googleso
 ## Features
 * Asynchronous HTTP request
 * AppCompat Material Design
-* Pull to refresh
+* RecyclerView and CardView
 * ViewPager
-* NestedFragments
+* Pull to refresh
+* Nested fragments
 * JSON parsing
 * Android Wear notification (in case you want to read an article on your watch for god-knows-what reason)
 
@@ -18,7 +19,7 @@ The entire GUI is dynamically created based on post categories JSON data at run-
 PS: This is still a work in progress. More features are coming soon, probably... 
 
 ## Requirements
-* Volley library (included)
+* Volley library
 * A WordPress site (tested on WordPress 4.x)
 * [JSON API WordPress plugin](https://wordpress.org/plugins/json-api/) 
 
@@ -27,12 +28,12 @@ Remember to set your own WordPress URL in Config.java before trying it out.
 I used [Disqus](https://disqus.com/) commenting system to remedy the  spamming issue. So you will need to have Disqus installed on your WordPress site as well. If you want to use WordPress's own comment function, you need to modify the code to read comments from API instead of rendering a Disqus webpage.
 
 ## Todo
-1. Add collapsing Toolbar
-2. Use RecyclerView
+1. <del>Use RecyclerView and CardView</del>
+2. Add collapsing Toolbar
 3. Switch to OkHttp
 
 ## Screenshots
-![Main GUI](http://i.imgur.com/T4rop7l.png)
+![Main GUI](http://i.imgur.com/G7U0rft.png)
 
 *Main GUI*
 

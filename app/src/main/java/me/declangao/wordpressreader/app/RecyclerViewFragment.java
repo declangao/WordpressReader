@@ -1,19 +1,17 @@
 package me.declangao.wordpressreader.app;
 
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,35 +24,32 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import me.declangao.wordpressreader.R;
-import me.declangao.wordpressreader.adaptor.PostAdaptor;
+import me.declangao.wordpressreader.adaptor.MyRecyclerViewAdaptor;
 import me.declangao.wordpressreader.model.Post;
 import me.declangao.wordpressreader.util.Config;
 import me.declangao.wordpressreader.util.JSONParser;
 
-
 /**
- * Fragment to display main UI, including TabLayout and ListView.
+ * Fragment to display a RecyclerView.
  * Activities that contain this fragment must implement the
- * {@link PostListFragment.OnPostSelectedListener} interface
+ * {@link RecyclerViewFragment.OnPostSelectedListener} interface
  * to handle interaction events.
  */
-public class PostListFragment extends Fragment implements AdapterView.OnItemClickListener,
-        AbsListView.OnScrollListener,
-        SwipeRefreshLayout.OnRefreshListener {
-    private static final String TAG = "PostListFragment";
+public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+    private static final String TAG = "RecyclerViewFragment";
     private static final String CAT_ID = "id";
 
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private ListView listView;
-    private PostAdaptor postAdaptor;
-    private FrameLayout frameLayout;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView mRecyclerView;
+    private MyRecyclerViewAdaptor mAdaptor;
+    private FrameLayout mFrameLayout;
+    private LinearLayoutManager mLayoutManager;
     // Widget to show user a loading message
-    private TextView tvLoading;
+    private TextView mLoadingView;
 
     // List of all posts in the ListView
     private ArrayList<Post> postList = new ArrayList<>();
@@ -66,6 +61,10 @@ public class PostListFragment extends Fragment implements AdapterView.OnItemClic
     private int mPreviousPostNum = 0; // Number of posts in the list
     private int mPostNum; // Number of posts in the "new" list
 
+    // Keep track of the list items
+    private int mPastVisibleItems;
+    private int mVisibleItemCount;
+
     private OnPostSelectedListener mListener;
 
     /**
@@ -73,17 +72,17 @@ public class PostListFragment extends Fragment implements AdapterView.OnItemClic
      * this fragment using the provided parameters.
      *
      * @param id ID of the category.
-     * @return A new instance of PostListFragment.
+     * @return A new instance of RecyclerViewFragment.
      */
-    public static PostListFragment newInstance(int id) {
-        PostListFragment fragment = new PostListFragment();
+    public static RecyclerViewFragment newInstance(int id) {
+        RecyclerViewFragment fragment = new RecyclerViewFragment();
         Bundle args = new Bundle();
         args.putInt(CAT_ID, id);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public PostListFragment() {
+    public RecyclerViewFragment() {
         // Required empty public constructor
     }
 
@@ -99,23 +98,52 @@ public class PostListFragment extends Fragment implements AdapterView.OnItemClic
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_post_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_recycler_view, container, false);
 
         // Pull to refresh layout
-        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout);
-        listView = (ListView) rootView.findViewById(R.id.list_view);
-        frameLayout = (FrameLayout) rootView.findViewById(R.id.post_list_container);
-        tvLoading = (TextView) rootView.findViewById(R.id.text_view_loading);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        mFrameLayout = (FrameLayout) rootView.findViewById(R.id.recycler_view_container);
+        mLoadingView = (TextView) rootView.findViewById(R.id.text_view_loading);
+        mLayoutManager = new LinearLayoutManager(getActivity());
 
         // Pull to refresh listener
-        swipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        // Custom list adaptor for Post object
-        postAdaptor = new PostAdaptor(getActivity(), postList);
+        // RecyclerView adaptor for Post object
+        mAdaptor = new MyRecyclerViewAdaptor(postList, new MyRecyclerViewAdaptor.OnItemClickListener() {
+            @Override
+            public void onItemClick(Post post) {
+                mListener.onPostSelected(post);
+            }
+        });
 
-        listView.setAdapter(postAdaptor);
-        listView.setOnItemClickListener(this);
-        listView.setOnScrollListener(this);
+        mRecyclerView.setHasFixedSize(true); // Every row in the list has the same size
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdaptor);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            // Automatically load new posts if end of the list is reached
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                //super.onScrolled(recyclerView, dx, dy);
+                mVisibleItemCount = mLayoutManager.getChildCount();
+                mPastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
+                int totalItemCount = mLayoutManager.getItemCount();
+
+                if (mPostNum > mPreviousPostNum && !postList.isEmpty() && mVisibleItemCount != 0 &&
+                        totalItemCount > mVisibleItemCount && !isLoading &&
+                        (mVisibleItemCount + mPastVisibleItems) >= totalItemCount) {
+                    loadNextPage();
+                    // Update post number
+                    mPreviousPostNum = mPostNum;
+                }
+            }
+        });
 
         return rootView;
     }
@@ -135,6 +163,8 @@ public class PostListFragment extends Fragment implements AdapterView.OnItemClic
 
         if (postList.isEmpty()) {
             showLoadingView();
+            // Reset post number to 0
+            mPreviousPostNum = 0;
             loadPosts(mPage, false);
         } else {
             hideLoadingView();
@@ -153,7 +183,7 @@ public class PostListFragment extends Fragment implements AdapterView.OnItemClic
      * Load posts from a specific page number
      *
      * @param page Page number
-     * @param showLoadingMsg Flag to determine whether to show the loading msg to inform the user
+     * @param showLoadingMsg Flag to determine whether to show Toast loading msg to inform the user
      */
     private void loadPosts(int page, final boolean showLoadingMsg) {
         Log.d(TAG, "----------------- Loading category id " + mCatId +
@@ -181,26 +211,27 @@ public class PostListFragment extends Fragment implements AdapterView.OnItemClic
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject jsonObject) {
-                        swipeRefreshLayout.setRefreshing(false); // Stop when done
+                        mSwipeRefreshLayout.setRefreshing(false); // Stop when done
 
                         // Parse JSON data
                         postList.addAll(JSONParser.parsePosts(jsonObject));
 
-                        // A temporary workaround to avoid duplicate posts in some rare
-                        // circumstances by converting ArrayList to a LinkedHashSet
-                        // without losing its order
+                        // A temporary workaround to avoid downloading duplicate posts in some
+                        // rare circumstances by converting ArrayList to a LinkedHashSet without
+                        // losing its order
                         Set<Post> set = new LinkedHashSet<>(postList);
                         postList.clear();
                         postList.addAll(new ArrayList<>(set));
 
                         mPostNum = postList.size(); // The newest post number
                         Log.d(TAG, "Number of posts: " + mPostNum);
-                        postAdaptor.notifyDataSetChanged(); // Display the list
+                        mAdaptor.notifyDataSetChanged(); // Display the list
 
                         // Set ListView position
-                        if (PostListFragment.this.mPage != 1) {
+                        if (RecyclerViewFragment.this.mPage != 1) {
                             // Move the article list up by one row
-                            listView.setSelection(listView.getFirstVisiblePosition() + 1);
+                            // We don't actually need to add 1 here since position starts at 0
+                            mLayoutManager.scrollToPosition(mPastVisibleItems + mVisibleItemCount);
                         }
 
                         // Loading finished. Set flag to false
@@ -214,13 +245,13 @@ public class PostListFragment extends Fragment implements AdapterView.OnItemClic
                     public void onErrorResponse(VolleyError volleyError) {
                         isLoading = false;
                         hideLoadingView();
-                        swipeRefreshLayout.setRefreshing(false);
+                        mSwipeRefreshLayout.setRefreshing(false);
 
                         volleyError.printStackTrace();
                         Log.d(TAG, "----- Error: " + volleyError.getMessage());
 
                         // Show a Snackbar with a retry button
-                        Snackbar.make(frameLayout, R.string.error_load_posts,
+                        Snackbar.make(mFrameLayout, R.string.error_load_posts,
                                 Snackbar.LENGTH_LONG).setAction(R.string.action_retry,
                                 new View.OnClickListener() {
                                     @Override
@@ -242,56 +273,11 @@ public class PostListFragment extends Fragment implements AdapterView.OnItemClic
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // Get selected post
-        Post p = postList.get(position);
-
-        // Send data to MainActivity
-        HashMap<String, String> map = new HashMap<>();
-        map.put("id", String.valueOf(p.getId()));
-        map.put("title", p.getTitle());
-        map.put("date", p.getDate());
-        map.put("author", p.getAuthor());
-        map.put("content", p.getContent());
-        map.put("url", p.getUrl());
-        map.put("thumbnailURL", p.getThumbnailUrl());
-        mListener.onPostSelected(map);
-    }
-
-    @Override
     public void onRefresh() {
         // Clear the list
         postList.clear();
-        postAdaptor.notifyDataSetChanged();
+        mAdaptor.notifyDataSetChanged();
         loadFirstPage();
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem,
-                         int visibleItemCount, int totalItemCount) {
-        // Automatically load new posts if end of the list is reached
-        if (mPostNum > mPreviousPostNum && !postList.isEmpty() && visibleItemCount != 0 &&
-                totalItemCount > visibleItemCount && !isLoading &&
-                (firstVisibleItem + visibleItemCount) == totalItemCount) {
-            loadNextPage();
-            // Update post number
-            mPreviousPostNum = mPostNum;
-            //
-            //if (mPostNum > mPreviousPostNum) {
-            //    //loading = true;
-            //    loadNextPage();
-            //    mPreviousPostNum = mPostNum;
-            //} else {
-            //    Log.d(TAG, "Showing toast!");
-            //    Toast.makeText(getActivity(), "You have reached the end!",
-            //            Toast.LENGTH_SHORT).show();
-            //}
-        }
     }
 
     @Override
@@ -307,23 +293,23 @@ public class PostListFragment extends Fragment implements AdapterView.OnItemClic
     }
 
     // Interface used to communicate with MainActivity
-    protected interface OnPostSelectedListener {
-        void onPostSelected(HashMap<String, String> map);
+    public interface OnPostSelectedListener {
+        void onPostSelected(Post post);
     }
 
     /**
      * Show the loading view and hide the list
      */
     private void showLoadingView() {
-        listView.setVisibility(View.INVISIBLE);
-        tvLoading.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mLoadingView.setVisibility(View.VISIBLE);
     }
 
     /**
      * Hide the loading view and show the list
      */
     private void hideLoadingView() {
-        tvLoading.setVisibility(View.INVISIBLE);
-        listView.setVisibility(View.VISIBLE);
+        mLoadingView.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 }

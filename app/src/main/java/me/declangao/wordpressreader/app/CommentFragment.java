@@ -31,6 +31,9 @@ public class CommentFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setRetainInstance(true);
+
         // Disable Options Menu for this fragment
         setHasOptionsMenu(false);
     }
