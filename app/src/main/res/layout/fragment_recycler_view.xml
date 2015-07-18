@@ -2,7 +2,6 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             android:id="@+id/recycler_view_container"
              tools:context="me.declangao.wordpressreader.app.RecyclerViewFragment">
 
     <!-- Article list -->
@@ -14,6 +13,7 @@
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scrollbars="vertical"
             android:id="@+id/recycler_view" />
 
     </android.support.v4.widget.SwipeRefreshLayout>

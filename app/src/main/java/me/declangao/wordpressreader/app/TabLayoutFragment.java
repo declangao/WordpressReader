@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -35,7 +34,6 @@ public class TabLayoutFragment extends Fragment {
 
     private ProgressDialog mProgressDialog;
     private TabLayout mTabLayout;
-    private FrameLayout mFrameLayout;
     private ViewPager mViewPager;
 
     // List of all categories
@@ -60,7 +58,6 @@ public class TabLayoutFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_tab_layout, container, false);
 
         mTabLayout = (TabLayout) rootView.findViewById(R.id.tab_layout);
-        mFrameLayout = (FrameLayout) rootView.findViewById(R.id.frame_container);
         mViewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
         // Preload 1 page to either side of the current page
         mViewPager.setOffscreenPageLimit(1);
@@ -111,7 +108,7 @@ public class TabLayoutFragment extends Fragment {
                         Log.d(TAG, "----- Volley Error -----");
                         mProgressDialog.dismiss();
                         // Show an INDEFINITE Snackbar. New in design support lib v22.2.1.
-                        Snackbar.make(mFrameLayout, R.string.error_load_categories,
+                        Snackbar.make(mTabLayout, R.string.error_load_categories,
                                 Snackbar.LENGTH_INDEFINITE).setAction(R.string.action_retry,
                                 new View.OnClickListener() {
                                     @Override

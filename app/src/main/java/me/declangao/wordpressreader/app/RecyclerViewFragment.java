@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,7 +45,6 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private MyRecyclerViewAdaptor mAdaptor;
-    private FrameLayout mFrameLayout;
     private LinearLayoutManager mLayoutManager;
     // Widget to show user a loading message
     private TextView mLoadingView;
@@ -103,7 +101,6 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         // Pull to refresh layout
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-        mFrameLayout = (FrameLayout) rootView.findViewById(R.id.recycler_view_container);
         mLoadingView = (TextView) rootView.findViewById(R.id.text_view_loading);
         mLayoutManager = new LinearLayoutManager(getActivity());
 
@@ -251,7 +248,7 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
                         Log.d(TAG, "----- Error: " + volleyError.getMessage());
 
                         // Show a Snackbar with a retry button
-                        Snackbar.make(mFrameLayout, R.string.error_load_posts,
+                        Snackbar.make(mRecyclerView, R.string.error_load_posts,
                                 Snackbar.LENGTH_LONG).setAction(R.string.action_retry,
                                 new View.OnClickListener() {
                                     @Override
