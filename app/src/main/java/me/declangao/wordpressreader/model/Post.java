@@ -37,7 +37,8 @@ public class Post {
      */
     @Override
     public int hashCode() {
-        return this.getId();
+        //return this.getId();
+        return Integer.valueOf(this.getId()).hashCode();
     }
 
     public String getTitle() {

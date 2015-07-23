@@ -10,7 +10,7 @@ import me.declangao.wordpressreader.R;
 import me.declangao.wordpressreader.model.Post;
 
 public class MainActivity extends AppCompatActivity implements
-        RecyclerViewFragment.OnPostSelectedListener,
+        RecyclerViewFragment.PostListListener,
         PostFragment.OnCommentSelectedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String TAB_LAYOUT_FRAGMENT_TAG = "TabLayoutFragment";
@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements
     private PostFragment pf;
     private CommentFragment cf;
 
+    private RecyclerViewFragment rvf;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,11 +38,13 @@ public class MainActivity extends AppCompatActivity implements
         tlf = new TabLayoutFragment();
         pf = new PostFragment();
         cf = new CommentFragment();
+        rvf = new RecyclerViewFragment();
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.container, pf, POST_FRAGMENT_TAG);
         ft.add(R.id.container, cf, COMMENT_FRAGMENT_TAG);
         ft.add(R.id.container, tlf, TAB_LAYOUT_FRAGMENT_TAG);
+
         ft.hide(pf);
         ft.hide(cf);
         ft.commit();
@@ -53,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements
      * @param post Selected Post object
      */
     @Override
-    public void onPostSelected(Post post) {
+    public void onPostSelected(Post post, boolean isSearch) {
         // Find the fragment in order to set it up later
         pf = (PostFragment) getSupportFragmentManager().findFragmentByTag(POST_FRAGMENT_TAG);
 
@@ -72,8 +75,28 @@ public class MainActivity extends AppCompatActivity implements
 
         // Show the fragment
         FragmentTransaction ft = fm.beginTransaction();
-        ft.hide(tlf);
+        if (!isSearch) { // Hide TabLayoutFragment if this is not search result
+            ft.hide(tlf);
+        } else { // Otherwise, hide the search result, ie. RecyclerViewFragment.
+            ft.hide(rvf);
+        }
         ft.show(pf);
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    /**
+     * Invoked when a search query is submitted
+     *
+     * @param query Selected Post object
+     */
+    @Override
+    public void onSearchSubmitted(String query) {
+        FragmentTransaction ft = fm.beginTransaction();
+        // Send query to fragment using an alternative factory method
+        rvf = RecyclerViewFragment.newInstance(query);
+        ft.add(R.id.container, rvf);
+        ft.hide(tlf);
         ft.addToBackStack(null);
         ft.commit();
     }

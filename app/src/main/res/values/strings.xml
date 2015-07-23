@@ -15,8 +15,6 @@
     <string name="error_load_categories">Network error. Failed to load categories.</string>
     <string name="error_load_posts">Network error. Failed to load articles.</string>
     <string name="action_retry">Retry</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search_hint">Enter search query here</string>
 
 </resources>

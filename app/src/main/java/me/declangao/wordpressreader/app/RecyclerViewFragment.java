@@ -1,6 +1,8 @@
 package me.declangao.wordpressreader.app;
 
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -9,8 +11,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,17 +41,20 @@ import me.declangao.wordpressreader.util.JSONParser;
 /**
  * Fragment to display a RecyclerView.
  * Activities that contain this fragment must implement the
- * {@link RecyclerViewFragment.OnPostSelectedListener} interface
+ * {@link RecyclerViewFragment.PostListListener} interface
  * to handle interaction events.
  */
-public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
+        SearchView.OnQueryTextListener {
     private static final String TAG = "RecyclerViewFragment";
-    private static final String CAT_ID = "id";
+    protected static final String CAT_ID = "id";
+    protected static final String QUERY = "query";
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private MyRecyclerViewAdaptor mAdaptor;
     private LinearLayoutManager mLayoutManager;
+    private SearchView searchView;
     // Widget to show user a loading message
     private TextView mLoadingView;
 
@@ -58,12 +67,15 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
     private int mCatId; // Category ID
     private int mPreviousPostNum = 0; // Number of posts in the list
     private int mPostNum; // Number of posts in the "new" list
+    private String mQuery = ""; // Query string used for search result
+    // Flag to determine if current fragment is used to show search result
+    private boolean isSearch = false;
 
     // Keep track of the list items
     private int mPastVisibleItems;
     private int mVisibleItemCount;
 
-    private OnPostSelectedListener mListener;
+    private PostListListener mListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -80,6 +92,21 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         return fragment;
     }
 
+    /**
+     * Use this factory method to create a new instance of this fragment
+     * using the provided parameters to display search result.
+     *
+     * @param query search query.
+     * @return A new instance of RecyclerViewFragment.
+     */
+    public static RecyclerViewFragment newInstance(String query) {
+        RecyclerViewFragment fragment = new RecyclerViewFragment();
+        Bundle args = new Bundle();
+        args.putString(QUERY, query);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     public RecyclerViewFragment() {
         // Required empty public constructor
     }
@@ -87,8 +114,13 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Display a search menu
+        setHasOptionsMenu(true);
+
         if (getArguments() != null) {
-            mCatId = getArguments().getInt(CAT_ID);
+            mCatId = getArguments().getInt(CAT_ID, -1);
+            mQuery = getArguments().getString(QUERY, "");
         }
     }
 
@@ -111,7 +143,7 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         mAdaptor = new MyRecyclerViewAdaptor(postList, new MyRecyclerViewAdaptor.OnItemClickListener() {
             @Override
             public void onItemClick(Post post) {
-                mListener.onPostSelected(post);
+                mListener.onPostSelected(post, isSearch);
             }
         });
 
@@ -195,11 +227,21 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
 
         // Construct the proper API Url
         String url;
-        if (mCatId == 0) { // The "All" tab
-            url = Config.BASE_URL + "?json=get_posts&page=" + String.valueOf(page);
-        } else { // Everything else
-            url = Config.BASE_URL + "?json=get_category_posts&category_id=" + String.valueOf(mCatId)
-                    + "&page=" + String.valueOf(page);
+        if (!mQuery.isEmpty()) { // Not empty mQuery means this list is for search result.
+            isSearch = true;
+            url = Config.BASE_URL + "?json=get_search_results&search=" + mQuery +
+                    "&page=" + String.valueOf(page);
+        } else { // Empty mQuery means normal list of posts
+            isSearch = false;
+
+            if (mCatId == 0) { // The "All" tab
+                url = Config.BASE_URL + "?json=get_posts&page=" + String.valueOf(page);
+            } else { // Everything else
+                isSearch = false;
+                url = Config.BASE_URL + "?json=get_category_posts&category_id=" + String.valueOf(mCatId)
+                        + "&page=" + String.valueOf(page);
+            }
+
         }
 
         Log.d(TAG, url);
@@ -278,20 +320,42 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (!isSearch) { // Avoid creating another search menu on the search result page
+            inflater.inflate(R.menu.menu_main, menu);
 
-        try {
-            mListener = (OnPostSelectedListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() +
-                    "must implement OnPostSelectedListener");
+            // Create expandable & collapsible SearchView
+            SearchManager searchManager = (SearchManager)
+                    getActivity().getSystemService(Context.SEARCH_SERVICE);
+            MenuItem searchMenuItem = menu.findItem(R.id.action_search);
+            searchView = (SearchView) searchMenuItem.getActionView();
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setIconifiedByDefault(false); // Expanded by default
+            searchView.requestFocus();
+            searchView.setQueryHint(getString(R.string.search_hint));
+            searchView.setOnQueryTextListener(this);
+            //searchView.setOnQueryTextFocusChangeListener(this);
         }
+
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
-    // Interface used to communicate with MainActivity
-    public interface OnPostSelectedListener {
-        void onPostSelected(Post post);
+    //@Override
+    //public boolean onOptionsItemSelected(MenuItem item) {
+    //    //mListener.onSearchSelected();
+    //    return true;
+    //}
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        searchView.clearFocus(); // Hide soft keyboard
+        mListener.onSearchSubmitted(query); // Deal with fragment transaction on MainActivity
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
     }
 
     /**
@@ -309,4 +373,23 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         mLoadingView.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mListener = (PostListListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() +
+                    "must implement PostListListener");
+        }
+    }
+
+    // Interface used to communicate with MainActivity
+    public interface PostListListener {
+        void onPostSelected(Post post, boolean isSearch);
+        void onSearchSubmitted(String query);
+    }
+
 }

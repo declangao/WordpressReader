@@ -33,7 +33,7 @@ I used [Disqus](https://disqus.com/) commenting system to remedy the  spamming i
 3. Switch to OkHttp
 
 ## Screenshots
-![Main GUI](http://i.imgur.com/G7U0rft.png)
+![Main GUI](http://i.imgur.com/h3IKdml.png)
 
 *Main GUI*
 
