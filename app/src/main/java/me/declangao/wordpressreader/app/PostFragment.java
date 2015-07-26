@@ -77,6 +77,9 @@ public class PostFragment extends Fragment {
     public void setUIArguments(final Bundle args) {
         getActivity().runOnUiThread(new Runnable() {
             public void run() {
+                // Clear the content first
+                webView.loadData("", "text/html; charset=UTF-8", null);
+
                 id = args.getInt("id");
                 title = args.getString("title");
                 String date = args.getString("date");
@@ -90,7 +93,7 @@ public class PostFragment extends Fragment {
                 String html = "<style>img{max-width:100%;height:auto;} " +
                         "iframe{width:100%;height:56%;}</style> ";
                 // Article Title
-                html += "<h2>" + title +"</h2> ";
+                html += "<h2>" + title + "</h2> ";
                 // Date & author
                 html += "<h4>" + date + " " + author + "</h4>";
                 // The actual content

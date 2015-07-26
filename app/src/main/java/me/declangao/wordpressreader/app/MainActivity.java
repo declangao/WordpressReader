@@ -21,8 +21,8 @@ public class MainActivity extends AppCompatActivity implements
     private TabLayoutFragment tlf;
     private PostFragment pf;
     private CommentFragment cf;
-
     private RecyclerViewFragment rvf;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,12 +69,13 @@ public class MainActivity extends AppCompatActivity implements
         args.putString("content", post.getContent());
         args.putString("url", post.getUrl());
         args.putString("thumbnailUrl", post.getThumbnailUrl());
-        //pf.setArguments(args);
         // Configure PostFragment to display the right post
         pf.setUIArguments(args);
 
         // Show the fragment
         FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right,
+                android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         if (!isSearch) { // Hide TabLayoutFragment if this is not search result
             ft.hide(tlf);
         } else { // Otherwise, hide the search result, ie. RecyclerViewFragment.
@@ -93,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSearchSubmitted(String query) {
         FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right,
+                android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         // Send query to fragment using an alternative factory method
         rvf = RecyclerViewFragment.newInstance(query);
         ft.add(R.id.container, rvf);
@@ -111,11 +114,12 @@ public class MainActivity extends AppCompatActivity implements
         cf = (CommentFragment) getSupportFragmentManager().findFragmentByTag(COMMENT_FRAGMENT_TAG);
         Bundle args = new Bundle();
         args.putInt("id", id);
-        //cf.setArguments(args);
         // Setup CommentFragment to display the right comments page
         cf.setUIArguments(args);
 
         FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right,
+                android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         ft.hide(pf);
         ft.show(cf);
         ft.addToBackStack(null);
@@ -127,26 +131,6 @@ public class MainActivity extends AppCompatActivity implements
     //public boolean onCreateOptionsMenu(Menu menu) {
     //    // Inflate the menu; this adds items to the action bar if it is present.
     //    getMenuInflater().inflate(R.menu.menu_main, menu);
-    //    return true;
-    //}
-
-    //@Override
-    //public boolean onOptionsItemSelected(MenuItem item) {
-    //    // Handle action bar item clicks here. The action bar will
-    //    // automatically handle clicks on the Home/Up button, so long
-    //    // as you specify a parent activity in AndroidManifest.xml.
-    //
-    //    //int id = item.getItemId();
-    //    //switch (id) {
-    //    //    case R.id.action_refresh:
-    //    //        plf.loadPosts();
-    //    //        return true;
-    //    //    case R.id.action_settings:
-    //    //        return true;
-    //    //    default:
-    //    //        return super.onOptionsItemSelected(item);
-    //    //}
-    //
     //    return true;
     //}
 }

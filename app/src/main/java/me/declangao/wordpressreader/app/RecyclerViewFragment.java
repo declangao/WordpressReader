@@ -331,7 +331,7 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
             searchView = (SearchView) searchMenuItem.getActionView();
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
             searchView.setIconifiedByDefault(false); // Expanded by default
-            searchView.requestFocus();
+            //searchView.requestFocus();
             searchView.setQueryHint(getString(R.string.search_hint));
             searchView.setOnQueryTextListener(this);
             //searchView.setOnQueryTextFocusChangeListener(this);
@@ -340,11 +340,13 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    //@Override
-    //public boolean onOptionsItemSelected(MenuItem item) {
-    //    //mListener.onSearchSelected();
-    //    return true;
-    //}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_search) {
+            searchView.requestFocus();
+        }
+        return true;
+    }
 
     @Override
     public boolean onQueryTextSubmit(String query) {

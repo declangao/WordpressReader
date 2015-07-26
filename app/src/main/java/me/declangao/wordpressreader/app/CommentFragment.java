@@ -22,7 +22,7 @@ import me.declangao.wordpressreader.util.MyWebViewClient;
 public class CommentFragment extends Fragment {
     private static final String TAG = "CommentFragment";
 
-    private WebView webViewComment;
+    private WebView webView;
 
     public CommentFragment() {
         // Required empty public constructor
@@ -44,7 +44,7 @@ public class CommentFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_comment, container, false);
         // Setup WebView
-        webViewComment = (WebView) rootView.findViewById(R.id.webView_comment);
+        webView = (WebView) rootView.findViewById(R.id.webView_comment);
 
         return rootView;
     }
@@ -64,27 +64,40 @@ public class CommentFragment extends Fragment {
                 // Create Disqus URL for this specific post
                 String url = Config.BASE_URL + "showcomments.php?disqus_id=" + disqusThreadId;
 
-                WebSettings webSettings = webViewComment.getSettings();
+                WebSettings webSettings = webView.getSettings();
                 // Enable JavaScript
                 webSettings.setJavaScriptEnabled(true);
                 // Let the WebView handle links in stead of opening links in external web browsers
-                webViewComment.requestFocusFromTouch();
+                webView.requestFocusFromTouch();
                 // User a custom WebViewClient to solve Disqus login and logout issues on Android
                 // See http://globeotter.com/blog/disqus-android-code/
-                webViewComment.setWebViewClient(new MyWebViewClient(url));
-                webViewComment.setWebChromeClient(new WebChromeClient());
+                webView.setWebViewClient(new MyWebViewClient(url));
+                webView.setWebChromeClient(new WebChromeClient());
 
                 // Lollipop only code
                 // Required on Lollipop in order to save login state
                 if (Build.VERSION.SDK_INT >= 21) {
                     // Enable cookies
-                    CookieManager.getInstance().setAcceptThirdPartyCookies(webViewComment, true);
+                    CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
                 }
 
                 // Load Disqus
-                webViewComment.loadUrl(url);
+                webView.loadUrl(url);
                 Log.d(TAG, "Disqus Thread Id: " + disqusThreadId);
             }
         });
+    }
+
+    /**
+     * Eliminate the chance of showing previous content by clearing the fragment on hidden.
+     *
+     */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (webView != null && hidden) {
+            webView.loadData("", "text/html; charset=UTF-8", null);
+        }
+
+        super.onHiddenChanged(hidden);
     }
 }
