@@ -10,7 +10,6 @@
 
     <!-- Alternative Theme -->
     <style name="WordPressReader" parent="Theme.AppCompat">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">#FF5722</item>
         <item name="colorPrimaryDark">#D84315</item>
         <item name="android:textColorPrimary">#ffffff</item>
@@ -22,9 +21,9 @@
 
     <!-- Custom widget styles -->
     <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
-        <item name="tabIndicatorColor">@color/colorPrimaryDark</item>
+        <item name="tabIndicatorColor">?android:textColorPrimary</item>
+        <item name="tabIndicatorHeight">2dp</item>
         <item name="tabBackground">@color/colorPrimary</item>
-        <!--<item name="tabSelectedTextColor">#FF8A65</item>-->
         <item name="tabTextAppearance">@style/CustomTabTextAppearance</item>
     </style>
     <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
