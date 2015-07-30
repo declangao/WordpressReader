@@ -4,10 +4,10 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import me.declangao.wordpressreader.R;
 import me.declangao.wordpressreader.model.Post;
+import me.declangao.wordpressreader.util.Config;
 
 public class MainActivity extends AppCompatActivity implements
         RecyclerViewFragment.PostListListener,
@@ -29,8 +29,8 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         // Setup action bar with the new toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
         fm = getSupportFragmentManager();
 
@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements
         args.putString("content", post.getContent());
         args.putString("url", post.getUrl());
         args.putString("thumbnailUrl", post.getThumbnailUrl());
+        args.putString("featuredImage", "".equals(post.getFeaturedImageUrl()) ?
+                Config.DEFAULT_THUMBNAIL_URL : post.getFeaturedImageUrl());
+
         // Configure PostFragment to display the right post
         pf.setUIArguments(args);
 

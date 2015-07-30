@@ -9,7 +9,7 @@ public class Post {
     private String title;
     private String content;
     private String thumbnailUrl;
-    private String featuredImageUrl;
+    private String featuredImageUrl = "";
     private String viewCount;
     private String date;
     private String author;

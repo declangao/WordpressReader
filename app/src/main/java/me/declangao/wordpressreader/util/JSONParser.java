@@ -90,6 +90,12 @@ public class JSONParser {
                 post.setId(postObject.optInt("id"));
                 post.setUrl(postObject.optString("url"));
 
+                JSONObject featuredImages = postObject.optJSONObject("thumbnail_images");
+                if (featuredImages != null) {
+                    post.setFeaturedImageUrl(featuredImages.optJSONObject("full")
+                            .optString("url", Config.DEFAULT_THUMBNAIL_URL));
+                }
+
                 posts.add(post);
             }
         } catch (JSONException e) {

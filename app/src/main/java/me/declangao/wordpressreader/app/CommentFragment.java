@@ -3,6 +3,7 @@ package me.declangao.wordpressreader.app;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ public class CommentFragment extends Fragment {
     private static final String TAG = "CommentFragment";
 
     private WebView webView;
+    private Toolbar toolbar;
 
     public CommentFragment() {
         // Required empty public constructor
@@ -43,6 +45,10 @@ public class CommentFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_comment, container, false);
+
+        toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        ((MainActivity) getActivity()).setSupportActionBar(toolbar);
+
         // Setup WebView
         webView = (WebView) rootView.findViewById(R.id.webView_comment);
 
@@ -83,6 +89,7 @@ public class CommentFragment extends Fragment {
 
                 // Load Disqus
                 webView.loadUrl(url);
+
                 Log.d(TAG, "Disqus Thread Id: " + disqusThreadId);
             }
         });

@@ -5,11 +5,13 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ImageView;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.ImageRequest;
@@ -43,6 +46,9 @@ public class PostFragment extends Fragment {
 
     private WebView webView;
 
+    private ImageView featuredImageView;
+    private Toolbar toolbar;
+
     private OnCommentSelectedListener mListener;
 
     public PostFragment() {
@@ -57,14 +63,28 @@ public class PostFragment extends Fragment {
 
         // Needed to show Options Menu
         setHasOptionsMenu(true);
+
+        Log.d(TAG, "onCreate()");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post, container, false);
+
+        toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        //((MainActivity)getActivity()).setSupportActionBar(toolbar);
+
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
+                rootView.findViewById(R.id.collapsingToolbarLayout);
+        collapsingToolbarLayout.setTitle(getString(R.string.app_name));
+
+        featuredImageView = (ImageView) rootView.findViewById(R.id.featuredImage);
+
         // Create the WebView
         webView = (WebView) rootView.findViewById(R.id.webview_post);
+
+        Log.d(TAG, "onCreateView()");
 
         return rootView;
     }
@@ -88,6 +108,16 @@ public class PostFragment extends Fragment {
                 url = args.getString("url");
                 thumbnailUrl = args.getString("thumbnailUrl");
 
+                // Download featured image
+                final String featuredImageUrl = args.getString("featuredImage");
+                ImageRequest ir = new ImageRequest(featuredImageUrl, new Response.Listener<Bitmap>() {
+                    @Override
+                    public void onResponse(Bitmap bitmap) {
+                        featuredImageView.setImageBitmap(bitmap);
+                    }
+                }, 0, 0, null, null);
+                AppController.getInstance().addToRequestQueue(ir);
+
                 // Construct HTML content
                 // First, some CSS
                 String html = "<style>img{max-width:100%;height:auto;} " +
@@ -107,19 +137,26 @@ public class PostFragment extends Fragment {
                 webView.loadData(html, "text/html; charset=UTF-8", null);
 
                 Log.d(TAG, "Showing post, ID: " + id);
+                Log.d(TAG, "Featured Image: " + featuredImageUrl);
+
+                // Reset Actionbar
+                ((MainActivity)getActivity()).setSupportActionBar(toolbar);
             }
         });
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.d(TAG, "onCreateOptionsMenu()");
+
         inflater.inflate(R.menu.menu_post, menu);
 
         // Get share menu item
         MenuItem item = menu.findItem(R.id.action_share);
         // Initialise ShareActionProvider
         // Use MenuItemCompat.getActionProvider(item) since we are using AppCompat support library
-        ShareActionProvider shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+        ShareActionProvider shareActionProvider =
+                (ShareActionProvider) MenuItemCompat.getActionProvider(item);
         // Share the article URL
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");

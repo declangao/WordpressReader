@@ -5,19 +5,11 @@
     <!--<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:navigationBarColor" tools:targetApi="21" >@color/colorPrimary</item>
-    </style>
-
-    <!-- Alternative Theme -->
-    <style name="WordPressReader" parent="Theme.AppCompat">
-        <item name="colorPrimary">#FF5722</item>
-        <item name="colorPrimaryDark">#D84315</item>
-        <item name="android:textColorPrimary">#ffffff</item>
-        <item name="android:textColorSecondary">#000000</item>
-        <item name="android:navigationBarColor" tools:targetApi="21" >#FF5722</item>
+        <!--<item name="android:navigationBarColor" tools:targetApi="21" >@color/colorPrimary</item>-->
         <!-- Transparent Navigation Bar -->
         <!--<item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item>-->
     </style>
+
 
     <!-- Custom widget styles -->
     <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
@@ -26,6 +18,7 @@
         <item name="tabBackground">@color/colorPrimary</item>
         <item name="tabTextAppearance">@style/CustomTabTextAppearance</item>
     </style>
+
     <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">#FFAB91</item>

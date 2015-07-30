@@ -4,6 +4,7 @@ A proof of concept app to demonstrate Google's [Volley](https://android.googleso
 ## Features
 * Asynchronous HTTP request
 * AppCompat Material Design
+* Collapsing Toolbar with CoordinatorLayout
 * RecyclerView and CardView
 * ViewPager
 * Pull to refresh
@@ -27,19 +28,29 @@ Remember to set your own WordPress URL in Config.java before trying it out.
 
 I used [Disqus](https://disqus.com/) commenting system to remedy the  spamming issue. So you will need to have Disqus installed on your WordPress site as well. If you want to use WordPress's own comment function, you need to modify the code to read comments from API instead of rendering a Disqus webpage.
 
-## Todo
+## Todos
 1. <del>Use RecyclerView and CardView</del>
-2. Add collapsing Toolbar
+2. <del>Add collapsing Toolbar<del>
 3. Switch to OkHttp
+
+## Known Issues
+1. Multiple issues with Actionbar.
+2. Youtube video playback seems to be broken.
+
+Both issues appeared after adding collapsing Toolbar. I'll investigate further as soon as I have some time to work on this project.
 
 ## Screenshots
 ![Main GUI](http://i.imgur.com/h3IKdml.png)
 
 *Main GUI*
 
-![Article](http://i.imgur.com/J440MXz.png)
+![Article expanded](http://i.imgur.com/lqF4S4N.png)
 
-*Article*
+*Article with expanded Toolbar*
+
+![Article collapsed](http://i.imgur.com/J440MXz.png)
+
+*Article with collapsed Toolbar*
 
 ![Comments](http://i.imgur.com/xP6lZqi.png)
 
