@@ -5,6 +5,8 @@
     <!--<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!--<item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="21">true</item>-->
+        <!--<item name="android:statusBarColor" tools:targetApi="21">@android:color/transparent</item>-->
         <!--<item name="android:navigationBarColor" tools:targetApi="21" >@color/colorPrimary</item>-->
         <!-- Transparent Navigation Bar -->
         <!--<item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item>-->

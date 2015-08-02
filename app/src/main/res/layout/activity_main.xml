@@ -12,9 +12,9 @@
         <!--android:id="@+id/toolbar">-->
     <!--</android.support.v7.widget.Toolbar>-->
 
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </FrameLayout>
+    <!--<FrameLayout-->
+        <!--android:id="@+id/container"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+    <!--</FrameLayout>-->
 </LinearLayout>

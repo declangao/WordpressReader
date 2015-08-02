@@ -34,10 +34,12 @@ I used [Disqus](https://disqus.com/) commenting system to remedy the  spamming i
 3. Switch to OkHttp
 
 ## Known Issues
-1. Multiple issues with Actionbar.
-2. Youtube video playback seems to be broken.
+1. Multiple minor issues with Actionbar.
+2. <del>Youtube video playback seems to be broken.<del>
 
-Both issues appeared after adding collapsing Toolbar. I'll investigate further as soon as I have some time to work on this project.
+Both issues appeared after adding collapsing Toolbar. I'll investigate further as soon as I have some time to work on this project. 
+
+Youtube playback has been fixed. Wrapping WebView with NestedScrollView caused some strange problems...
 
 ## Screenshots
 ![Main GUI](http://i.imgur.com/h3IKdml.png)

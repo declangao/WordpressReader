@@ -5,11 +5,13 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -48,6 +50,7 @@ public class PostFragment extends Fragment {
 
     private ImageView featuredImageView;
     private Toolbar toolbar;
+    private NestedScrollView nestedScrollView;
 
     private OnCommentSelectedListener mListener;
 
@@ -78,6 +81,8 @@ public class PostFragment extends Fragment {
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)
                 rootView.findViewById(R.id.collapsingToolbarLayout);
         collapsingToolbarLayout.setTitle(getString(R.string.app_name));
+
+        nestedScrollView = (NestedScrollView) rootView.findViewById(R.id.nestedScrollView);
 
         featuredImageView = (ImageView) rootView.findViewById(R.id.featuredImage);
 
@@ -121,7 +126,7 @@ public class PostFragment extends Fragment {
                 // Construct HTML content
                 // First, some CSS
                 String html = "<style>img{max-width:100%;height:auto;} " +
-                        "iframe{width:100%;height:56%;}</style> ";
+                        "iframe{width:100%;}</style> ";
                 // Article Title
                 html += "<h2>" + title + "</h2> ";
                 // Date & author
@@ -132,6 +137,7 @@ public class PostFragment extends Fragment {
                 // Enable JavaScript in order to be able to Play Youtube videos
                 webView.getSettings().setJavaScriptEnabled(true);
                 webView.setWebChromeClient(new WebChromeClient());
+
                 // Load and display HTML content
                 // Use "charset=UTF-8" to support non-English language
                 webView.loadData(html, "text/html; charset=UTF-8", null);
@@ -140,7 +146,16 @@ public class PostFragment extends Fragment {
                 Log.d(TAG, "Featured Image: " + featuredImageUrl);
 
                 // Reset Actionbar
-                ((MainActivity)getActivity()).setSupportActionBar(toolbar);
+                ((MainActivity) getActivity()).setSupportActionBar(toolbar);
+
+                // Make sure the article starts from the very top
+                // Delayed coz it can take some time for WebView to load HTML content
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        nestedScrollView.smoothScrollTo(0, 0);
+                    }
+                }, 500);
             }
         });
     }

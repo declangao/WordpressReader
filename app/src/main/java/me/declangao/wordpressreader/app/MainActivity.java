@@ -5,7 +5,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import me.declangao.wordpressreader.R;
 import me.declangao.wordpressreader.model.Post;
 import me.declangao.wordpressreader.util.Config;
 
@@ -26,11 +25,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // Setup action bar with the new toolbar
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+        //setContentView(R.layout.activity_main);
 
         fm = getSupportFragmentManager();
 
@@ -41,9 +36,9 @@ public class MainActivity extends AppCompatActivity implements
         rvf = new RecyclerViewFragment();
 
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.container, pf, POST_FRAGMENT_TAG);
-        ft.add(R.id.container, cf, COMMENT_FRAGMENT_TAG);
-        ft.add(R.id.container, tlf, TAB_LAYOUT_FRAGMENT_TAG);
+        ft.add(android.R.id.content, pf, POST_FRAGMENT_TAG);
+        ft.add(android.R.id.content, cf, COMMENT_FRAGMENT_TAG);
+        ft.add(android.R.id.content, tlf, TAB_LAYOUT_FRAGMENT_TAG);
 
         ft.hide(pf);
         ft.hide(cf);
@@ -101,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements
                 android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         // Send query to fragment using an alternative factory method
         rvf = RecyclerViewFragment.newInstance(query);
-        ft.add(R.id.container, rvf);
+        ft.add(android.R.id.content, rvf);
         ft.hide(tlf);
         ft.addToBackStack(null);
         ft.commit();
