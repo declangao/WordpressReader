@@ -4,13 +4,16 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import me.declangao.wordpressreader.model.Post;
 import me.declangao.wordpressreader.util.Config;
 
 public class MainActivity extends AppCompatActivity implements
-        RecyclerViewFragment.PostListListener,
-        PostFragment.OnCommentSelectedListener {
+        RecyclerViewFragment.PostListListener, PostFragment.PostListener,
+        TabLayoutFragment.TabLayoutListener, SearchResultFragment.SearchResultListener,
+        CommentFragment.CommentListener {
+
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String TAB_LAYOUT_FRAGMENT_TAG = "TabLayoutFragment";
     public static final String POST_FRAGMENT_TAG = "PostFragment";
@@ -20,12 +23,11 @@ public class MainActivity extends AppCompatActivity implements
     private TabLayoutFragment tlf;
     private PostFragment pf;
     private CommentFragment cf;
-    private RecyclerViewFragment rvf;
+    private SearchResultFragment srf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
 
         fm = getSupportFragmentManager();
 
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements
         tlf = new TabLayoutFragment();
         pf = new PostFragment();
         cf = new CommentFragment();
-        rvf = new RecyclerViewFragment();
+        srf = new SearchResultFragment();
 
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(android.R.id.content, pf, POST_FRAGMENT_TAG);
@@ -76,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements
                 android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         if (!isSearch) { // Hide TabLayoutFragment if this is not search result
             ft.hide(tlf);
-        } else { // Otherwise, hide the search result, ie. RecyclerViewFragment.
-            ft.hide(rvf);
+        } else { // Otherwise, hide the search result, ie. SearchResultFragment.
+            ft.hide(srf);
         }
         ft.show(pf);
         ft.addToBackStack(null);
@@ -94,9 +96,10 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction ft = fm.beginTransaction();
         ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right,
                 android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-        // Send query to fragment using an alternative factory method
-        rvf = RecyclerViewFragment.newInstance(query);
-        ft.add(android.R.id.content, rvf);
+
+        // Send query to fragment using factory method
+        srf = SearchResultFragment.newInstance(query);
+        ft.add(android.R.id.content, srf);
         ft.hide(tlf);
         ft.addToBackStack(null);
         ft.commit();
@@ -122,6 +125,34 @@ public class MainActivity extends AppCompatActivity implements
         ft.show(cf);
         ft.addToBackStack(null);
         ft.commit();
+    }
+
+    /**
+     * Intercept back button event, reset ActionBar if necessary
+     */
+    @Override
+    public void onBackPressed() {
+        resetActionBarIfApplicable();
+        super.onBackPressed();
+    }
+
+    /**
+     * Simulate a back button press when home is selected
+     */
+    @Override
+    public void onHomePressed() {
+        resetActionBarIfApplicable();
+        fm.popBackStack();
+    }
+
+    /**
+     * Reset TabLayoutFragment's ActionBar if necessary
+     */
+    private void resetActionBarIfApplicable() {
+        Log.d(TAG, "SearchResultFragment is visible: " + srf.isHidden());
+        if (srf.isVisible()) {
+            tlf.resetActionBar();
+        }
     }
 
     // Commented out coz we will let fragments handle their own Options Menus

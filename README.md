@@ -34,19 +34,16 @@ I used [Disqus](https://disqus.com/) commenting system to remedy the  spamming i
 3. Switch to OkHttp
 
 ## Known Issues
-1. Multiple minor issues with Actionbar.
-2. <del>Youtube video playback seems to be broken.<del>
+Wrapping WebView with a NestedScrollView caused some strange problems. All known issues have been fixed.
 
-Both issues appeared after adding collapsing Toolbar. I'll investigate further as soon as I have some time to work on this project. 
-
-Youtube playback has been fixed. Wrapping WebView with NestedScrollView caused some strange problems...
+Feel free to raise an issue if you find any.
 
 ## Screenshots
-![Main GUI](http://i.imgur.com/h3IKdml.png)
+![Main GUI](http://i.imgur.com/FDJyFTM.png)
 
 *Main GUI*
 
-![Article expanded](http://i.imgur.com/lqF4S4N.png)
+![Article expanded](http://i.imgur.com/tJXSkpZ.png)
 
 *Article with expanded Toolbar*
 
@@ -54,9 +51,13 @@ Youtube playback has been fixed. Wrapping WebView with NestedScrollView caused s
 
 *Article with collapsed Toolbar*
 
-![Comments](http://i.imgur.com/xP6lZqi.png)
+![Comments](http://i.imgur.com/IgUZsfI.png)
 
 *Comments*
+
+![Search](http://i.imgur.com/U9glsSX.png)
+
+*Search*
 
 ![Android Wear](http://i.imgur.com/w3VrO87.png)
 

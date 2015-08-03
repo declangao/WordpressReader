@@ -45,8 +45,7 @@ import me.declangao.wordpressreader.util.JSONParser;
  * {@link RecyclerViewFragment.PostListListener} interface
  * to handle interaction events.
  */
-public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener,
-        SearchView.OnQueryTextListener {
+public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "RecyclerViewFragment";
     protected static final String CAT_ID = "id";
     protected static final String QUERY = "query";
@@ -55,7 +54,6 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
     private RecyclerView mRecyclerView;
     private MyRecyclerViewAdaptor mAdaptor;
     private LinearLayoutManager mLayoutManager;
-    private SearchView searchView;
     // Widget to show user a loading message
     private TextView mLoadingView;
 
@@ -115,9 +113,6 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Display a search menu
-        setHasOptionsMenu(true);
 
         if (getArguments() != null) {
             mCatId = getArguments().getInt(CAT_ID, -1);
@@ -320,47 +315,6 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
         loadFirstPage();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (!isSearch) { // Avoid creating another search menu on the search result page
-            inflater.inflate(R.menu.menu_main, menu);
-
-            // Create expandable & collapsible SearchView
-            SearchManager searchManager = (SearchManager)
-                    getActivity().getSystemService(Context.SEARCH_SERVICE);
-            MenuItem searchMenuItem = menu.findItem(R.id.action_search);
-            searchView = (SearchView) searchMenuItem.getActionView();
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-            searchView.setIconifiedByDefault(false); // Expanded by default
-            //searchView.requestFocus();
-            searchView.setQueryHint(getString(R.string.search_hint));
-            searchView.setOnQueryTextListener(this);
-            //searchView.setOnQueryTextFocusChangeListener(this);
-        }
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_search) {
-            searchView.requestFocus();
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        searchView.clearFocus(); // Hide soft keyboard
-        mListener.onSearchSubmitted(query); // Deal with fragment transaction on MainActivity
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        return false;
-    }
-
     /**
      * Show the loading view and hide the list
      */
@@ -392,7 +346,6 @@ public class RecyclerViewFragment extends Fragment implements SwipeRefreshLayout
     // Interface used to communicate with MainActivity
     public interface PostListListener {
         void onPostSelected(Post post, boolean isSearch);
-        void onSearchSubmitted(String query);
     }
 
 }

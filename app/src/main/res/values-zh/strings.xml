@@ -15,5 +15,6 @@
     <string name="error_load_posts">网络错误，读取文章失败！</string>
     <string name="action_retry">重试</string>
     <string name="search_hint">在这里输入搜索关键词</string>
+    <string name="search_result">搜索结果：</string>
 
 </resources>

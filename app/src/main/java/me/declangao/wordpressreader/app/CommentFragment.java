@@ -1,11 +1,13 @@
 package me.declangao.wordpressreader.app;
 
+import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
@@ -19,12 +21,17 @@ import me.declangao.wordpressreader.util.MyWebViewClient;
 
 /**
  * Fragment to display a Disqus comments page.
+ * Activities that contain this fragment must implement the
+ * {@link CommentFragment.CommentListener} interface
+ * to handle interaction events.
  */
 public class CommentFragment extends Fragment {
     private static final String TAG = "CommentFragment";
 
     private WebView webView;
     private Toolbar toolbar;
+
+    private CommentListener mListener;
 
     public CommentFragment() {
         // Required empty public constructor
@@ -35,9 +42,7 @@ public class CommentFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         setRetainInstance(true);
-
-        // Disable Options Menu for this fragment
-        setHasOptionsMenu(false);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -47,12 +52,19 @@ public class CommentFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_comment, container, false);
 
         toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        ((MainActivity) getActivity()).setSupportActionBar(toolbar);
 
         // Setup WebView
         webView = (WebView) rootView.findViewById(R.id.webView_comment);
 
         return rootView;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            mListener.onHomePressed();
+        }
+        return true;
     }
 
     /**
@@ -91,6 +103,12 @@ public class CommentFragment extends Fragment {
                 webView.loadUrl(url);
 
                 Log.d(TAG, "Disqus Thread Id: " + disqusThreadId);
+
+                // Reset Actionbar
+                ((MainActivity) getActivity()).setSupportActionBar(toolbar);
+                ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                ((MainActivity)getActivity()).getSupportActionBar()
+                        .setTitle(getString(R.string.action_comments));
             }
         });
     }
@@ -106,5 +124,30 @@ public class CommentFragment extends Fragment {
         }
 
         super.onHiddenChanged(hidden);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (CommentListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement CommentListener");
+        }
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface CommentListener {
+        void onHomePressed();
     }
 }

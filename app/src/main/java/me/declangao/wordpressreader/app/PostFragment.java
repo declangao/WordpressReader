@@ -34,7 +34,7 @@ import me.declangao.wordpressreader.R;
 /**
  * Fragment to display content of a post in a WebView.
  * Activities that contain this fragment must implement the
- * {@link PostFragment.OnCommentSelectedListener} interface
+ * {@link PostFragment.PostListener} interface
  * to handle interaction events.
  */
 public class PostFragment extends Fragment {
@@ -52,7 +52,7 @@ public class PostFragment extends Fragment {
     private Toolbar toolbar;
     private NestedScrollView nestedScrollView;
 
-    private OnCommentSelectedListener mListener;
+    private PostListener mListener;
 
     public PostFragment() {
         // Required empty public constructor
@@ -66,8 +66,6 @@ public class PostFragment extends Fragment {
 
         // Needed to show Options Menu
         setHasOptionsMenu(true);
-
-        Log.d(TAG, "onCreate()");
     }
 
     @Override
@@ -104,6 +102,7 @@ public class PostFragment extends Fragment {
             public void run() {
                 // Clear the content first
                 webView.loadData("", "text/html; charset=UTF-8", null);
+                featuredImageView.setImageBitmap(null);
 
                 id = args.getInt("id");
                 title = args.getString("title");
@@ -147,6 +146,7 @@ public class PostFragment extends Fragment {
 
                 // Reset Actionbar
                 ((MainActivity) getActivity()).setSupportActionBar(toolbar);
+                ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
                 // Make sure the article starts from the very top
                 // Delayed coz it can take some time for WebView to load HTML content
@@ -192,6 +192,9 @@ public class PostFragment extends Fragment {
             case R.id.action_send_to_wear:
                 sendToWear();
                 return true;
+            case android.R.id.home:
+                mListener.onHomePressed();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -229,6 +232,7 @@ public class PostFragment extends Fragment {
                 notificationManagerCompat.notify(id, builder.build());
             }
         }, 0, 0, null, null);
+
         AppController.getInstance().getRequestQueue().add(ir);
     }
 
@@ -236,10 +240,10 @@ public class PostFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnCommentSelectedListener) activity;
+            mListener = (PostListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnCommentSelectedListener");
+                    + " must implement PostListener");
         }
     }
 
@@ -259,8 +263,9 @@ public class PostFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnCommentSelectedListener {
+    public interface PostListener {
         void onCommentSelected(int id);
+        void onHomePressed();
     }
 
 }

@@ -1,17 +1,3 @@
-<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-             <!--xmlns:tools="http://schemas.android.com/tools"-->
-             <!--android:layout_width="match_parent"-->
-             <!--android:layout_height="match_parent"-->
-             <!--tools:context="me.declangao.wordpressreader.app.PostFragment">-->
-
-    <!--&lt;!&ndash; WebView used to display the article &ndash;&gt;-->
-    <!--<WebView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:id="@+id/webview_post"/>-->
-
-<!--</FrameLayout>-->
-
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"

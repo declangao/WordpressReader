@@ -16,5 +16,6 @@
     <string name="error_load_posts">Network error. Failed to load articles.</string>
     <string name="action_retry">Retry</string>
     <string name="search_hint">Enter search query here</string>
+    <string name="search_result">Search Result for</string>
 
 </resources>
