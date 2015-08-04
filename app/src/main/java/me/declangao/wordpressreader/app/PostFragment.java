@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -52,6 +54,9 @@ public class PostFragment extends Fragment {
     private Toolbar toolbar;
     private NestedScrollView nestedScrollView;
 
+    private AppBarLayout appBarLayout;
+    private CoordinatorLayout coordinatorLayout;
+
     private PostListener mListener;
 
     public PostFragment() {
@@ -82,12 +87,14 @@ public class PostFragment extends Fragment {
 
         nestedScrollView = (NestedScrollView) rootView.findViewById(R.id.nestedScrollView);
 
+        // The following two layouts are needed to expand the collapsed Toolbar
+        appBarLayout = (AppBarLayout) rootView.findViewById(R.id.appbarLayout);
+        coordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.coordinatorLayout);
+
         featuredImageView = (ImageView) rootView.findViewById(R.id.featuredImage);
 
         // Create the WebView
         webView = (WebView) rootView.findViewById(R.id.webview_post);
-
-        Log.d(TAG, "onCreateView()");
 
         return rootView;
     }
@@ -146,7 +153,10 @@ public class PostFragment extends Fragment {
 
                 // Reset Actionbar
                 ((MainActivity) getActivity()).setSupportActionBar(toolbar);
-                ((MainActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                ((MainActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+                // Expand the Toolbar by default
+                expandToolbar();
 
                 // Make sure the article starts from the very top
                 // Delayed coz it can take some time for WebView to load HTML content
@@ -197,6 +207,21 @@ public class PostFragment extends Fragment {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Expand a collapsed Toolbar
+     * See <a href="http://stackoverflow.com/questions/30655939/">Stack Overflow</a> for more info
+     */
+    private void expandToolbar() {
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)
+                appBarLayout.getLayoutParams();
+        AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+
+        if(behavior!=null) {
+            behavior.setTopAndBottomOffset(0);
+            behavior.onNestedPreScroll(coordinatorLayout, appBarLayout, null, 0, 1, new int[2]);
         }
     }
 

@@ -1,13 +1,15 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
+
+    <style name="AppTheme" parent="Base.AppTheme">
+
+    </style>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="Base.AppTheme" parent="Theme.AppCompat.NoActionBar">
     <!--<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:navigationBarColor" tools:targetApi="21" >@color/colorPrimary</item>
-        <!--<item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="21">true</item>-->
-        <!--<item name="android:statusBarColor" tools:targetApi="21">@android:color/transparent</item>-->
+
         <!-- Transparent Navigation Bar -->
         <!--<item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item>-->
     </style>

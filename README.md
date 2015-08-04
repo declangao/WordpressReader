@@ -20,7 +20,7 @@ The entire GUI is dynamically created based on post categories JSON data at run-
 PS: This is still a work in progress. More features are coming soon, probably... 
 
 ## Requirements
-* Volley library
+* Volley library (included in the project)
 * A WordPress site (tested on WordPress 4.x)
 * [JSON API WordPress plugin](https://wordpress.org/plugins/json-api/) 
 
@@ -34,7 +34,7 @@ I used [Disqus](https://disqus.com/) commenting system to remedy the  spamming i
 3. Switch to OkHttp
 
 ## Known Issues
-Wrapping WebView with a NestedScrollView caused some strange problems. All known issues have been fixed.
+Wrapping WebView with a NestedScrollView caused some strange problems. All known issues have been resolved.
 
 Feel free to raise an issue if you find any.
 
@@ -47,7 +47,7 @@ Feel free to raise an issue if you find any.
 
 *Article with expanded Toolbar*
 
-![Article collapsed](http://i.imgur.com/J440MXz.png)
+![Article collapsed](http://i.imgur.com/obETDUP.png)
 
 *Article with collapsed Toolbar*
 
