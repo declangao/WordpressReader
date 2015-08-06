@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import me.declangao.wordpressreader.model.Post;
-import me.declangao.wordpressreader.util.Config;
 
 public class MainActivity extends AppCompatActivity implements
         RecyclerViewFragment.PostListListener, PostFragment.PostListener,
@@ -66,9 +65,8 @@ public class MainActivity extends AppCompatActivity implements
         args.putString("author", post.getAuthor());
         args.putString("content", post.getContent());
         args.putString("url", post.getUrl());
-        args.putString("thumbnailUrl", post.getThumbnailUrl());
-        args.putString("featuredImage", "".equals(post.getFeaturedImageUrl()) ?
-                Config.DEFAULT_THUMBNAIL_URL : post.getFeaturedImageUrl());
+        //args.putString("thumbnailUrl", post.getThumbnailUrl());
+        args.putString("featuredImage", post.getFeaturedImageUrl());
 
         // Configure PostFragment to display the right post
         pf.setUIArguments(args);

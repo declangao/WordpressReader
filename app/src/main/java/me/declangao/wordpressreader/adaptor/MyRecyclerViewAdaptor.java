@@ -1,19 +1,19 @@
 package me.declangao.wordpressreader.adaptor;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import me.declangao.wordpressreader.R;
-import me.declangao.wordpressreader.app.AppController;
 import me.declangao.wordpressreader.model.Post;
 
 /**
@@ -22,9 +22,7 @@ import me.declangao.wordpressreader.model.Post;
 public class MyRecyclerViewAdaptor extends RecyclerView.Adapter<MyRecyclerViewAdaptor.ViewHolder> {
     // A list of posts
     private List<Post> posts;
-
-    // ImageLoader from Volley, used to load images for NetworkImageView
-    private ImageLoader imageLoader = AppController.getInstance().getImageLoader();
+    private Context mContext;
 
     private OnItemClickListener mListener;
 
@@ -41,12 +39,17 @@ public class MyRecyclerViewAdaptor extends RecyclerView.Adapter<MyRecyclerViewAd
     public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, final int i) {
         View v = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.card_view_item, viewGroup, false);
+        mContext = viewGroup.getContext();
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int i) {
-        viewHolder.networkImageView.setImageUrl(posts.get(i).getThumbnailUrl(), imageLoader);
+        Glide.with(mContext)
+                .load(posts.get(i).getThumbnailUrl())
+                .centerCrop()
+                .into(viewHolder.thumbnailImageView);
+
         viewHolder.title.setText(posts.get(i).getTitle());
 
         int count = posts.get(i).getCommentCount();
@@ -67,14 +70,14 @@ public class MyRecyclerViewAdaptor extends RecyclerView.Adapter<MyRecyclerViewAd
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        NetworkImageView networkImageView;
+        ImageView thumbnailImageView;
         TextView title;
         TextView commentCount;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            networkImageView = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
+            thumbnailImageView = (ImageView) itemView.findViewById(R.id.thumbnail);
             title = (TextView) itemView.findViewById(R.id.title);
             commentCount = (TextView) itemView.findViewById(R.id.comment_count);
         }

@@ -32,8 +32,6 @@ public class JSONParser {
             // Get "categories" Json array
             JSONArray categories = jsonObject.getJSONArray("categories");
 
-            // We need to add 1 here coz we will manually create an "All" category
-
             // Create "All" category
             Category all = new Category();
             all.setId(0);
@@ -77,7 +75,7 @@ public class JSONParser {
                 Post post = new Post();
                 // Configure the Post object
                 post.setTitle(postObject.optString("title", "N/A"));
-                // Use a default thumbnail image if one doesn't exist
+                // Use a default thumbnail if one doesn't exist
                 post.setThumbnailUrl(postObject.optString("thumbnail",
                         Config.DEFAULT_THUMBNAIL_URL));
                 post.setCommentCount(postObject.optInt("comment_count", 0));

@@ -18,7 +18,7 @@
         android:padding="8dp" >
 
         <!-- Thumbnail image -->
-        <com.android.volley.toolbox.NetworkImageView
+        <ImageView
             android:id="@+id/thumbnail"
             android:layout_width="120dp"
             android:layout_height="100dp"

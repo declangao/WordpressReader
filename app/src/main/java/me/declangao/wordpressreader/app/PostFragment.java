@@ -28,8 +28,9 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
-import com.android.volley.Response;
-import com.android.volley.toolbox.ImageRequest;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import me.declangao.wordpressreader.R;
 
@@ -46,7 +47,7 @@ public class PostFragment extends Fragment {
     private String title;
     private String content;
     private String url;
-    private String thumbnailUrl;
+    private String featuredImageUrl;
 
     private WebView webView;
 
@@ -117,17 +118,13 @@ public class PostFragment extends Fragment {
                 String author = args.getString("author");
                 content = args.getString("content");
                 url = args.getString("url");
-                thumbnailUrl = args.getString("thumbnailUrl");
+                featuredImageUrl = args.getString("featuredImage");
 
                 // Download featured image
-                final String featuredImageUrl = args.getString("featuredImage");
-                ImageRequest ir = new ImageRequest(featuredImageUrl, new Response.Listener<Bitmap>() {
-                    @Override
-                    public void onResponse(Bitmap bitmap) {
-                        featuredImageView.setImageBitmap(bitmap);
-                    }
-                }, 0, 0, null, null);
-                AppController.getInstance().addToRequestQueue(ir);
+                Glide.with(PostFragment.this)
+                        .load(featuredImageUrl)
+                        .centerCrop()
+                        .into(featuredImageView);
 
                 // Construct HTML content
                 // First, some CSS
@@ -245,20 +242,23 @@ public class PostFragment extends Fragment {
                 .setContentIntent(pendingIntent)
                 .setStyle(bigTextStyle);
 
-        // Load thumbnail as background image
-        ImageRequest ir = new ImageRequest(thumbnailUrl, new Response.Listener<Bitmap>() {
-            @Override
-            public void onResponse(Bitmap bitmap) {
-                builder.setLargeIcon(bitmap);
+        // Load featured image as background image
+        Glide.with(this)
+                .load(featuredImageUrl)
+                .asBitmap()
+                .centerCrop()
+                .into(new SimpleTarget<Bitmap>(360, 360) {
+                    @Override
+                    public void onResourceReady(Bitmap resource,
+                                                GlideAnimation<? super Bitmap> glideAnimation) {
+                        builder.setLargeIcon(resource);
 
-                NotificationManagerCompat notificationManagerCompat =
-                        NotificationManagerCompat.from(getActivity());
-                notificationManagerCompat.cancel(id);
-                notificationManagerCompat.notify(id, builder.build());
-            }
-        }, 0, 0, null, null);
-
-        AppController.getInstance().getRequestQueue().add(ir);
+                        NotificationManagerCompat notificationManagerCompat =
+                                NotificationManagerCompat.from(getActivity());
+                        notificationManagerCompat.cancel(id);
+                        notificationManagerCompat.notify(id, builder.build());
+                    }
+                });
     }
 
     @Override
