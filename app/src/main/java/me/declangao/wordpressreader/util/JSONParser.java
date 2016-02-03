@@ -76,8 +76,14 @@ public class JSONParser {
                 // Configure the Post object
                 post.setTitle(postObject.optString("title", "N/A"));
                 // Use a default thumbnail if one doesn't exist
-                post.setThumbnailUrl(postObject.optString("thumbnail",
-                        Config.DEFAULT_THUMBNAIL_URL));
+                // post.setThumbnailUrl(postObject.optString("thumbnail",
+                //         Config.DEFAULT_THUMBNAIL_URL));
+                if (attachments != null) {
+                    post.setThumbnailUrl(postObject.getJSONArray("attachments")
+                            .getJSONObject(0).optString("url", Config.DEFAULT_THUMBNAIL_URL));
+                    post.setFeaturedImageUrl(postObject.getJSONArray("attachments")
+                            .getJSONObject(0).optString("url", Config.DEFAULT_THUMBNAIL_URL));
+                }
                 post.setCommentCount(postObject.optInt("comment_count", 0));
                 //post.setViewCount(postObject.getJSONObject("custom_fields")
                 //        .getJSONArray("post_views_count").getString(0));
@@ -88,11 +94,11 @@ public class JSONParser {
                 post.setId(postObject.optInt("id"));
                 post.setUrl(postObject.optString("url"));
 
-                JSONObject featuredImages = postObject.optJSONObject("thumbnail_images");
-                if (featuredImages != null) {
-                    post.setFeaturedImageUrl(featuredImages.optJSONObject("full")
-                            .optString("url", Config.DEFAULT_THUMBNAIL_URL));
-                }
+                // JSONObject featuredImages = postObject.optJSONObject("thumbnail_images");
+                // if (featuredImages != null) {
+                //     post.setFeaturedImageUrl(featuredImages.optJSONObject("full")
+                //             .optString("url", Config.DEFAULT_THUMBNAIL_URL));
+                // }
 
                 posts.add(post);
             }
